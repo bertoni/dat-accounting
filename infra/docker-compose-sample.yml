@@ -1,0 +1,14 @@
+version: '2'
+services:
+    node:
+        image: node:8
+        container_name: node
+        restart: on-failure
+        tty: true
+        user: node
+        ports:
+            - "8181:8181"
+        volumes:
+            - /path/your/project/:/var/www/app
+            - /path/your/localtime/:/etc/localtime
+        command: ["npm", "run", "--prefix", "/var/www/app/", "start"]
