@@ -9,7 +9,13 @@ let storeMocks = createStoreMocks({
   getters: {},
   mutations: {},
   actions: {
-    notify: jest.fn((store, data) => {})
+    notify: jest.fn((store, data) => {}),
+    setRepository: jest.fn((store, link) => {
+      if (link !== 'dat://123456789wertyui') {
+        return Promise.reject(Error('error'))
+      }
+      return Promise.resolve(true)
+    })
   },
   state: {}
 })
@@ -56,11 +62,25 @@ describe('Login.vue', () => {
     expect(storeMocks.actions.notify).not.toBeCalled()
   })
 
-  it('should $emit notify in submit method', () => {
+  it('should dispatch notify in submit method', () => {
     wrapper.vm.link = 'dat://123456789wertyui'
     wrapper.vm.submit()
-    expect(wrapper.vm.infoLink).toBe('')
-    expect(wrapper.vm.formValidated).toBeTruthy()
-    expect(storeMocks.actions.notify).toBeCalled()
+    expect(storeMocks.actions.setRepository).toBeCalled()
+    setTimeout(() => {
+      expect(wrapper.vm.infoLink).toBe('')
+      expect(wrapper.vm.formValidated).toBeTruthy()
+      expect(storeMocks.actions.notify).toBeCalled()
+    }, 100)
+  })
+
+  it('should dispatch notify with error in submit method', () => {
+    wrapper.vm.link = 'dat://123456789weri'
+    wrapper.vm.submit()
+    expect(storeMocks.actions.setRepository).toBeCalled()
+    setTimeout(() => {
+      expect(wrapper.vm.infoLink).toBe('')
+      expect(wrapper.vm.formValidated).toBeTruthy()
+      expect(storeMocks.actions.notify).toBeCalled()
+    }, 100)
   })
 })
