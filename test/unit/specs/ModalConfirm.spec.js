@@ -50,6 +50,11 @@ describe('ModalConfirm.vue', () => {
     expect(storeMocks.actions.closeModalConfirm).toBeCalled()
   })
 
+  it('should dispatch closeModalConfirm in callbackOk prop default', () => {
+    wrapper.vm.callbackOk()
+    expect(storeMocks.actions.closeModalConfirm).toBeCalled()
+  })
+
   it('should return style block with opened true', () => {
     wrapper = shallowMount(ModalConfirm, {
       propsData: {

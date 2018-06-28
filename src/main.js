@@ -10,24 +10,14 @@ import velocity from 'velocity-animate'
 import '@/assets/css/Roboto-font.css'
 import '@/assets/icons/fuse-icon-font/style.css'
 import 'animate.css/animate.min.css'
-// import '@/assets/vendor/pnotify/pnotify.custom.min.css'
-// import '@/assets/vendor/nvd3/build/nv.d3.min.css'
 import 'perfect-scrollbar/css/perfect-scrollbar.css'
 import '@/assets/vendor/fuse-html/fuse-html.min.css'
 import '@/assets/css/main.css'
 
 // JS dependencies
 import '@/assets/vendor/jquery/dist/jquery.min.js'
-// import '@/assets/vendor/perfect-scrollbar/js/perfect-scrollbar.jquery.min.js'
-// import '@/assets/vendor/popper.js/index.js'
 import 'bootstrap/dist/js/bootstrap.min.js'
-// import '@/assets/vendor/d3/d3.v3.js'
-// import '@/assets/vendor/nvd3/build/nv.d3.js'
-// import '@/assets/vendor/datatables-net/js/datatables.js'
-// import '@/assets/vendor/datatables-responsive/js/dataTables.responsive.js'
-// import '@/assets/vendor/pnotify/pnotify.custom.js'
 import '@/assets/vendor/fuse-html/fuse-html.min.js'
-// import '@/assets/js/main.js'
 
 Vue.config.productionTip = false
 

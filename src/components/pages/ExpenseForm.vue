@@ -158,6 +158,17 @@ export default {
     }
   },
   methods: {
+    clearExpense () {
+      this.expense.date = ''
+      this.expense.category = ''
+      this.expense.name = ''
+      this.expense.price = this.money.prefix + '0' + this.money.decimal + '00'
+      this.expense.parcel = 0
+      this.expense.type = ''
+      this.expense.situation = ''
+      this.expense.observation = ''
+      this.expense.parcelTotal = ''
+    },
     clearValidate () {
       this.formValidated = false
       for (let idx in this.validation) {
@@ -167,6 +178,7 @@ export default {
     dataIsValidate () {
       let check = true
       for (let idx in this.validation) {
+        /* istanbul ignore else  */
         if (this.validation.hasOwnProperty(idx)) {
           check &= !this.validation[idx].length
         }
@@ -185,6 +197,7 @@ export default {
       if (!this.expense.name.toString().trim().length) {
         this.validation.name = 'The name is required'
       }
+      /* istanbul ignore if  */
       if (!this.expense.price.toString().trim().length) {
         this.validation.price = 'The price is required'
       } else if (!parseFloat(this.expense.price.toString().replace(/\$\s/, ''))) {
@@ -204,7 +217,7 @@ export default {
       }
     },
     save () {
-      if (typeof this.id === 'string' && this.id.length) {
+      if (typeof this.expense.id === 'string' && this.expense.id.length) {
         this.$store.dispatch('updateExpense', this.expense)
           .then(() => {
             this.$store.dispatch('notify', {type: 'success', text: 'Updated'})
@@ -216,16 +229,7 @@ export default {
           .then(() => {
             this.$store.dispatch('notify', {type: 'success', text: 'Saved'})
             this.clearValidate()
-            this.expense = {
-              date: '',
-              category: '',
-              name: '',
-              price: '',
-              parcel: 0,
-              type: '',
-              situation: '',
-              observation: ''
-            }
+            this.clearExpense()
           })
           .catch(error => this.$store.dispatch('notify', {text: error.message}))
       }

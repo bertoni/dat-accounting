@@ -38,7 +38,7 @@ export default {
   },
   data () {
     return {
-      date: Moment().format('YYYY-MM-DD'),
+      date: Moment().add(1, 'd').format('YYYY-MM-DD'),
       category: '',
       name: '',
       price: 0,

@@ -41,7 +41,7 @@ export default {
     callbackOk: {
       type: Function,
       required: true,
-      default: () => {
+      default: function () {
         return this.$store.dispatch('closeModalConfirm')
       }
     }

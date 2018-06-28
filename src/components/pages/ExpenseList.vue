@@ -141,15 +141,16 @@ export default {
         sort: 'DESC',
         month: this.currentDate.format('MM')
       })
-        .then(data => {
-          this.expenses = []
-          for (let idx in data) {
-            this.expenses.push(this.formatRow(data[idx]))
-          }
-          this.setFooter()
-          this.loading = false
-        })
-        .catch(error => this.$store.dispatch('notify', {text: error.message}))
+        .then(data => this.setExpenses(data))
+        .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+    },
+    setExpenses (data) {
+      this.expenses = []
+      for (let idx in data) {
+        this.expenses.push(this.formatRow(data[idx]))
+      }
+      this.setFooter()
+      this.loading = false
     },
     formatRow (data) {
       return {
@@ -164,6 +165,7 @@ export default {
       }
     },
     remove (data, event) {
+      /* istanbul ignore if  */
       if (event) {
         event.preventDefault()
       }
@@ -175,6 +177,7 @@ export default {
       })
     },
     edit (data, event) {
+      /* istanbul ignore if  */
       if (event) {
         event.preventDefault()
       }
@@ -183,21 +186,27 @@ export default {
     confirmRemove () {
       this.$store.dispatch('closeModalConfirm')
       this.$store.dispatch('removeExpense', this.dataRemove.id)
-        .then(() => {
-          const expenseExists = (id, expenses) => {
-            for (let x in expenses) {
-              if (expenses.hasOwnProperty(x) && expenses[x].id === id) {
-                return x
-              }
-            }
-            return false
+        .then(() => this.effectRemove())
+        .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+    },
+    effectRemove () {
+      const expenseExists = (id, expenses) => {
+        for (let x in expenses) {
+          if (expenses.hasOwnProperty(x) && expenses[x].id === id) {
+            return x
           }
-          this.expenses.splice(expenseExists(this.dataRemove, this.expenses), 1)
-          this.dataRemove = {}
-          this.setFooter()
-          this.$store.dispatch('notify', {type: 'success', text: 'Removed'})
-        })
-        .catch(error => this.$store.dispatch('notify', {text: error.message}))
+        }
+        return false
+      }
+      let idx = expenseExists(this.dataRemove.id, this.expenses)
+      if (idx === false) {
+        this.$store.dispatch('notify', {text: 'Expense not found to remove'})
+        return false
+      }
+      this.expenses.splice(idx, 1)
+      this.dataRemove = {}
+      this.setFooter()
+      this.$store.dispatch('notify', {type: 'success', text: 'Removed'})
     },
     prevMonth () {
       this.currentDate = Moment(this.currentDate).subtract(1, 'months')

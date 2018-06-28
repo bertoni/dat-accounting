@@ -79,7 +79,7 @@ export default {
     }
   },
   mounted () {
-    this.activeBackground = Math.floor(Math.random() * (this.backgrounds.length - 0 + 1)) + 0
+    this.activeBackground = Math.floor(Math.random() * this.backgrounds.length) + 0
   }
 }
 </script>

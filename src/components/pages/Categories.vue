@@ -67,10 +67,17 @@ export default {
       return { name: data }
     },
     remove (data, event) {
+      /* istanbul ignore if  */
       if (event) {
         event.preventDefault()
       }
-      let idx = this.categories.indexOf(data)
+      let idx = -1
+      let i = 0
+      while (idx < 0 && i < this.categories.length) {
+        if (this.categories[i++].name === data.name) {
+          idx = (i - 1)
+        }
+      }
       if (idx === -1) {
         this.$store.dispatch('notify', {text: 'Category not found'})
         return false
@@ -112,6 +119,7 @@ export default {
     save () {
       let categories = []
       for (let idx in this.categories) {
+        /* istanbul ignore else  */
         if (this.categories.hasOwnProperty(idx)) {
           categories.push(this.categories[idx].name)
         }
@@ -131,6 +139,12 @@ export default {
       for (let idx in value) {
         this.categories.push(this.formatRow(value[idx]))
       }
+    }
+  },
+  mounted () {
+    this.categories = []
+    for (let idx in this.oldCategories) {
+      this.categories.push(this.formatRow(this.oldCategories[idx]))
     }
   }
 }

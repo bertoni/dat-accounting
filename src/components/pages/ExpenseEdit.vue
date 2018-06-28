@@ -47,7 +47,7 @@ export default {
       loading: true,
       expense: {
         id: '',
-        date: Moment().format('YYYY-MM-DD'),
+        date: Moment().add(1, 'd').format('YYYY-MM-DD'),
         category: '',
         name: '',
         price: 0,
@@ -58,30 +58,33 @@ export default {
       }
     }
   },
+  methods: {
+    fillExpense (expense) {
+      this.expense.date = Moment(expense.date).format('YYYY-MM-DD')
+      this.expense.category = expense.category
+      this.expense.name = expense.name
+      this.expense.price = expense.price.toFixed(2)
+      this.expense.parcel = expense.parcel
+      this.expense.type = expense.type
+      this.expense.situation = expense.situation
+      this.expense.observation = expense.observation
+      this.loading = false
+    },
+    notFoundExpense () {
+      this.$store.dispatch('notify', {type: 'error', text: 'Expense not found'})
+      this.$router.push({name: 'expense-list'})
+    }
+  },
   mounted () {
-    if (!this.$route.params.id || !this.$route.params.id.length) {
+    if (!this.$route.params.id || !this.$route.params.id.toString().length) {
       this.$store.dispatch('notify', {type: 'error', text: 'Expense not found'})
       this.$router.push({name: 'expense-list'})
       return false
     }
     this.expense.id = this.$route.params.id
     this.$store.dispatch('getExpenseById', this.expense.id)
-      .then(expense => {
-        this.expense.date = Moment(expense.date).format('YYYY-MM-DD')
-        this.expense.category = expense.category
-        this.expense.name = expense.name
-        this.expense.price = expense.price.toFixed(2)
-        this.expense.parcel = expense.parcel
-        this.expense.type = expense.type
-        this.expense.situation = expense.situation
-        this.expense.observation = expense.observation
-        this.loading = false
-      })
-      .catch(error => {
-        console.warn(error)
-        this.$store.dispatch('notify', {type: 'error', text: 'Expense not found'})
-        this.$router.push({name: 'expense-list'})
-      })
+      .then(expense => this.fillExpense(expense))
+      .catch(() => this.notFoundExpense())
   }
 }
 </script>
