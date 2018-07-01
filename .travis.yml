@@ -7,5 +7,5 @@ node_js:
 install:
   - npm install -g codecov
 script:
-  - npm run unit
-  - npm run unitCover && codecov
+  - npm run test
+  - npm run testCover && codecov
