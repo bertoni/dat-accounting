@@ -9,7 +9,9 @@
     </div>
     <quick-panel-component />
     <login-component
-      v-show="!isLogged" />
+      v-show="!splashScreen && !isLogged" />
+    <splash-screen-component
+      v-if="splashScreen" />
     <modal-simple-component
       :opened="modalSimpleStatus"
       :content="modalSimpleContent"
@@ -35,6 +37,7 @@ import ModalSimpleComponent from '@/components/ModalSimple'
 import ModalConfirmComponent from '@/components/ModalConfirm'
 import SideModalComponent from '@/components/SideModal'
 import LoginComponent from '@/components/Login'
+import SplashScreenComponent from '@/components/SplashScreen'
 
 export default {
   name: 'App',
@@ -45,11 +48,13 @@ export default {
     ModalSimpleComponent,
     ModalConfirmComponent,
     SideModalComponent,
-    LoginComponent
+    LoginComponent,
+    SplashScreenComponent
   },
   data () {
     return {
-      clientHeight: 0
+      clientHeight: 0,
+      splashScreen: true
     }
   },
   computed: {
@@ -96,6 +101,9 @@ export default {
     window.addEventListener('resize', () => {
       this.clientHeight = document.documentElement.clientHeight
     })
+    setTimeout(() => {
+      this.splashScreen = false
+    }, 500)
   }
 }
 </script>

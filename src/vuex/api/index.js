@@ -1,3 +1,4 @@
+/* global DatArchive */
 const WebDB = require('@beaker/webdb')
 let webdb = new WebDB('webdb-dat-accounting')
 
@@ -20,7 +21,15 @@ export default {
       })
       webdb.open()
     },
-    openDB: (repository) => webdb.indexArchive(repository)
+    openDB: (repository) => webdb.indexArchive(repository),
+    create: (title, description) => DatArchive.create({
+      'title': title,
+      'description': description
+    }),
+    makeStructure: (archive) => {
+      archive.mkdir('expense')
+      return true
+    }
   },
   categories: {
     load: (repository) => webdb.categories.get(repository + '/categories.json'),

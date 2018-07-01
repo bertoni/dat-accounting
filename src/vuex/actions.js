@@ -3,7 +3,7 @@ import * as types from './mutation_types'
 import API from './api'
 import Moment from 'moment'
 
-const getSettingsRepository = (repositoryLink) => ({ repository: repositoryLink })
+const formatSettingsRepository = (repositoryLink) => ({ repository: repositoryLink })
 
 export default {
   init: (store) => {
@@ -56,13 +56,20 @@ export default {
     return new Promise((resolve, reject) => {
       API.infra.openDB(repository)
         .then(ret => {
-          let settings = getSettingsRepository(repository)
+          let settings = formatSettingsRepository(repository)
           window.localStorage.setItem('settings', JSON.stringify(settings))
           store.commit(types.SET_REPOSITORY, repository)
           resolve(true)
         })
         .catch(error => reject(error))
     })
+  },
+  createAccount: (store) => {
+    return API.infra.create('DatAccounting Repository', 'My DatAccounting repository, where contain my data')
+      .then(archive => {
+        API.infra.makeStructure(archive)
+        return archive.url
+      })
   },
   logout: (store) => {
     store.commit(types.SET_REPOSITORY, '')

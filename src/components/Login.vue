@@ -53,6 +53,10 @@ export default {
   },
   methods: {
     create () {
+      this.$store.dispatch('createAccount')
+        .then(/* istanbul ignore next */repository => this.$store.dispatch('setRepository', repository))
+        .then(/* istanbul ignore next */() => this.$store.dispatch('notify', {text: 'Welcome!', type: 'success'}))
+        .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
     },
     submit () {
       let re = /^dat:\/\/[a-z0-9]+$/
@@ -69,12 +73,8 @@ export default {
 
       if (!this.infoLink.length) {
         this.$store.dispatch('setRepository', this.link)
-          .then(() => {
-            this.$store.dispatch('notify', {text: 'Welcome back!', type: 'success'})
-          })
-          .catch(error => {
-            this.$store.dispatch('notify', {text: error.message})
-          })
+          .then(/* istanbul ignore next */() => this.$store.dispatch('notify', {text: 'Welcome back!', type: 'success'}))
+          .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
       }
     }
   },

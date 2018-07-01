@@ -15,7 +15,8 @@ let storeMocks = createStoreMocks({
         return Promise.reject(Error('error'))
       }
       return Promise.resolve(true)
-    })
+    }),
+    createAccount: jest.fn(() => Promise.resolve(true))
   },
   state: {}
 })
@@ -65,22 +66,22 @@ describe('Login.vue', () => {
   it('should dispatch notify in submit method', () => {
     wrapper.vm.link = 'dat://123456789wertyui'
     wrapper.vm.submit()
+    expect(wrapper.vm.infoLink).toBe('')
+    expect(wrapper.vm.formValidated).toBeTruthy()
     expect(storeMocks.actions.setRepository).toBeCalled()
-    setTimeout(() => {
-      expect(wrapper.vm.infoLink).toBe('')
-      expect(wrapper.vm.formValidated).toBeTruthy()
-      expect(storeMocks.actions.notify).toBeCalled()
-    }, 100)
   })
 
   it('should dispatch notify with error in submit method', () => {
     wrapper.vm.link = 'dat://123456789weri'
     wrapper.vm.submit()
+    expect(wrapper.vm.infoLink).toBe('')
+    expect(wrapper.vm.formValidated).toBeTruthy()
     expect(storeMocks.actions.setRepository).toBeCalled()
-    setTimeout(() => {
-      expect(wrapper.vm.infoLink).toBe('')
-      expect(wrapper.vm.formValidated).toBeTruthy()
-      expect(storeMocks.actions.notify).toBeCalled()
-    }, 100)
+  })
+
+  it('should dispatch createAccount in create method', () => {
+    wrapper.vm.link = 'dat://123456789wertyui'
+    wrapper.vm.create()
+    expect(storeMocks.actions.createAccount).toBeCalled()
   })
 })
