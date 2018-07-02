@@ -1,5 +1,8 @@
 export default {
   userIsLogged: state => {
-    return state.repository.length > 0
+    return state.repository && state.repository.key
+  },
+  currentAccount: state => {
+    return state.repository.title || ''
   }
 }

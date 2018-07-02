@@ -5,6 +5,7 @@ import Categories from '@/components/pages/Categories'
 import ExpenseList from '@/components/pages/ExpenseList'
 import ExpenseAdd from '@/components/pages/ExpenseAdd'
 import ExpenseEdit from '@/components/pages/ExpenseEdit'
+import MyAccounts from '@/components/pages/MyAccounts'
 
 Vue.use(Router)
 
@@ -34,6 +35,11 @@ export default new Router({
       path: '/expense/:id',
       name: 'expense-edit',
       component: ExpenseEdit
+    },
+    {
+      path: '/my-accounts',
+      name: 'my-accounts',
+      component: MyAccounts
     }
   ]
 })

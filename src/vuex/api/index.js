@@ -1,46 +1,84 @@
 /* global DatArchive */
 const WebDB = require('@beaker/webdb')
-let webdb = new WebDB('webdb-dat-accounting')
 
-export default {
+const API = {
+  webdb: {
+    options: [],
+    current: {}
+  },
   infra: {
     defineTables: () => {
-      webdb.define('account', {
+      this.a.webdb.current.webdb.define('account', {
         index: ['name'],
         filePattern: ['/account.json']
       })
-      webdb.define('categories', {
+      this.a.webdb.current.webdb.define('categories', {
         index: ['lastUpdate', 'lastUpdate'],
         filePattern: [
           '/categories.json'
         ]
       })
-      webdb.define('expense', {
+      this.a.webdb.current.webdb.define('expense', {
         index: ['id', 'date', 'category', 'price', 'type', 'situation'],
         filePattern: '/expense/*.json'
       })
-      webdb.open()
+      return this.a.webdb.current.webdb.open()
     },
-    openDB: (repository) => webdb.indexArchive(repository),
+    checkDB: (repository) => {
+      return DatArchive.load(repository)
+        .then(archive => {
+          this.a.infra.makeStructure(archive)
+          return archive.getInfo()
+        })
+    },
+    addWebDB: (data) => {
+      this.a.webdb.options[data.key] = JSON.parse(JSON.stringify(data))
+    },
+    addCurrentWebDB: (data) => {
+      this.a.webdb.current = JSON.parse(JSON.stringify(data))
+      this.a.webdb.current.webdb = new WebDB('webdb-dat-accounting-' + data.key)
+      this.a.infra.defineTables()
+      return this.a.webdb.current.webdb.indexArchive(data.url)
+    },
+    removeWebDB: (data) => {
+      if (this.a.webdb.current.key === data.key) {
+        throw new Error('This account is active and cannot be remove')
+      }
+      delete this.a.webdb.options[data.key]
+    },
+    openDB: (repository) => {
+      let detail
+      return this.a.infra.checkDB(repository)
+        .then(info => {
+          detail = info
+          this.a.webdb.options[detail.key] = detail
+          this.a.webdb.current = detail
+          this.a.webdb.current.webdb = new WebDB('webdb-dat-accounting-' + detail.key)
+          return this.a.infra.defineTables()
+        })
+        .then(() => this.a.webdb.current.webdb.indexArchive(repository))
+        .then(() => detail)
+    },
     create: (title, description) => DatArchive.create({
       'title': title,
       'description': description
     }),
     makeStructure: (archive) => {
-      archive.mkdir('expense')
-      return true
+      return archive.readdir('expense')
+        .then(() => true)
+        .catch(() => archive.mkdir('expense'))
     }
   },
   categories: {
-    load: (repository) => webdb.categories.get(repository + '/categories.json'),
-    create: (repository, categories) => webdb.account.upsert(repository + '/categories.json', {
+    load: () => this.a.webdb.current.webdb.categories.get(this.a.webdb.current.url + '/categories.json'),
+    create: (categories) => this.a.webdb.current.webdb.account.upsert(this.a.webdb.current.url + '/categories.json', {
       lastUpdate: new Date(),
       categories: categories
     })
   },
   expense: {
     list: (formData) => {
-      let query = webdb.expense.query()
+      let query = this.a.webdb.current.webdb.expense.query()
       if (formData.limit) {
         query = query.limit(formData.limit)
       }
@@ -59,13 +97,15 @@ export default {
       return query.toArray()
     },
     remove: (id) => {
-      return webdb.expense.query()
+      return this.a.webdb.current.webdb.expense.query()
         .where('id').equals(id)
         .delete()
     },
-    save: (repository, expense) => {
-      return webdb.expense.upsert(repository + '/expense/' + expense.id + '.json', expense)
+    save: (expense) => {
+      return this.a.webdb.current.webdb.expense.upsert(this.a.webdb.current.url + '/expense/' + expense.id + '.json', expense)
     },
-    get: (repository, id) => webdb.expense.get(repository + '/expense/' + id + '.json')
+    get: (repository, id) => this.a.webdb.current.webdb.expense.get(this.a.webdb.current.url + '/expense/' + id + '.json')
   }
 }
+
+export default API

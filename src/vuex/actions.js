@@ -3,20 +3,39 @@ import * as types from './mutation_types'
 import API from './api'
 import Moment from 'moment'
 
-const formatSettingsRepository = (repositoryLink) => ({ repository: repositoryLink })
+const formatSettingsRepository = (repositories, repository) => ({ repository: repository, repositories: repositories })
+
+const initCurrentDB = (store, account) => {
+  return API.infra.addCurrentWebDB(account)
+    .then(() => {
+      store.commit(types.SET_REPOSITORY, account)
+      return API.categories.load()
+        .then(categories => store.commit(types.SET_CATEGORIES, categories.categories))
+        .catch(error => { console.warn(error.message) })
+    })
+}
 
 export default {
   init: (store) => {
-    API.infra.defineTables()
     try {
-      let settingsLocalStorage = JSON.parse(window.localStorage.settings)
-      API.infra.openDB(settingsLocalStorage.repository)
-        .then(ret => store.commit(types.SET_REPOSITORY, settingsLocalStorage.repository))
-        .then(() => {
-          API.categories.load(settingsLocalStorage.repository)
-            .then(categories => store.commit(types.SET_CATEGORIES, categories.categories))
-            .catch(error => { console.warn(error.message) })
-        })
+      let settingsLocalStorage = window.localStorage.settings
+      if (settingsLocalStorage) {
+        settingsLocalStorage = JSON.parse(settingsLocalStorage)
+        if (settingsLocalStorage.repositories.length > 1) {
+          let commit = []
+          for (let idx in settingsLocalStorage.repositories) {
+            commit.push(API.infra.addWebDB(settingsLocalStorage.repositories[idx]))
+          }
+          Promise.all(commit)
+            .then(() => {
+              store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
+              initCurrentDB(store, settingsLocalStorage.repository)
+            })
+        } else {
+          store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
+          initCurrentDB(store, settingsLocalStorage.repository)
+        }
+      }
     } catch (e) {
       console.warn(e.message)
     }
@@ -52,13 +71,56 @@ export default {
       title: (data.title || null)
     })
   },
+  removeRepository: (store, key) => {
+    return new Promise((resolve, reject) => {
+      let repository = store.state.repositories.filter(elem => elem.key === key)
+      if (!repository[0]) {
+        return reject(Error('Account not found'))
+      }
+      try {
+        API.infra.removeWebDB(repository[0])
+        let settingsLocalStorage = JSON.parse(window.localStorage.settings)
+        settingsLocalStorage.repositories = store.state.repositories.filter(elem => elem.key !== key)
+        window.localStorage.setItem('settings', JSON.stringify(settingsLocalStorage))
+        store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
+        resolve('Account removed')
+      } catch (e) {
+        reject(e)
+      }
+    })
+  },
+  importRepository: (store, repository) => {
+    return API.infra.checkDB(repository)
+      .then(detailDB => {
+        let settingsLocalStorage = JSON.parse(window.localStorage.settings)
+        let exists = settingsLocalStorage.repositories.filter(elem => elem.key === detailDB.key)
+        if (exists[0]) {
+          throw Error('Account already exists')
+        }
+        API.infra.addWebDB(detailDB)
+        settingsLocalStorage.repositories.push(detailDB)
+        window.localStorage.setItem('settings', JSON.stringify(settingsLocalStorage))
+        store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
+        return true
+      })
+  },
   setRepository: (store, repository) => {
     return new Promise((resolve, reject) => {
       API.infra.openDB(repository)
-        .then(ret => {
-          let settings = formatSettingsRepository(repository)
+        .then(detailDB => {
+          let repositories = []
+          let settingsLocalStorage = window.localStorage.settings
+          if (settingsLocalStorage) {
+            repositories = JSON.parse(settingsLocalStorage)
+          }
+          let exists = repositories.filter(elem => elem.key === detailDB.key)
+          if (!exists[0]) {
+            repositories.push(detailDB)
+          }
+          let settings = formatSettingsRepository(repositories, detailDB)
           window.localStorage.setItem('settings', JSON.stringify(settings))
-          store.commit(types.SET_REPOSITORY, repository)
+          store.commit(types.SET_REPOSITORY, detailDB)
+          store.commit(types.SET_REPOSITORIES, repositories)
           resolve(true)
         })
         .catch(error => reject(error))
@@ -71,13 +133,29 @@ export default {
         return archive.url
       })
   },
+  changeAccount: (store, key) => {
+    return new Promise((resolve, reject) => {
+      let repository = store.state.repositories.filter(elem => elem.key === key)
+      if (!repository[0]) {
+        return reject(Error('Account not found'))
+      }
+      initCurrentDB(store, repository[0])
+        .then(() => {
+          let settingsLocalStorage = JSON.parse(window.localStorage.settings)
+          settingsLocalStorage.repository = repository[0]
+          window.localStorage.setItem('settings', JSON.stringify(settingsLocalStorage))
+          resolve('Changed Account')
+        })
+        .catch(error => reject(error))
+    })
+  },
   logout: (store) => {
     store.commit(types.SET_REPOSITORY, '')
     window.localStorage.removeItem('settings')
   },
   setCategories: (store, categories) => {
     return new Promise((resolve, reject) => {
-      API.categories.create(store.state.repository, categories)
+      API.categories.create(categories)
         .then(() => {
           store.commit(types.SET_CATEGORIES, categories)
           resolve(true)
@@ -101,7 +179,7 @@ export default {
   },
   getExpenseById (store, id) {
     return new Promise((resolve, reject) => {
-      API.expense.get(store.state.repository, id)
+      API.expense.get(id)
         .then(expense => resolve(expense))
         .catch(error => reject(error))
     })
@@ -114,7 +192,7 @@ export default {
     expense.parcelTotal = (expense.parcel > 2 ? expense.parcel : null)
     expense.parcel = (expense.parcel > 2 ? 1 : 0)
     expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
-    expenses.push(API.expense.save(store.state.repository, expense))
+    expenses.push(API.expense.save(expense))
     if (expense.parcelTotal) {
       for (let i = 2; i <= expense.parcelTotal; i++) {
         let nextExpense = JSON.parse(JSON.stringify(expense))
@@ -122,7 +200,7 @@ export default {
         nextExpense.date = Moment(nextExpense.date).add((i - 1), 'months')
         nextExpense.parcel = i
         nextExpense.situations = 'Pending'
-        expenses.push(API.expense.save(store.state.repository, nextExpense))
+        expenses.push(API.expense.save(nextExpense))
       }
     }
     return Promise.all(expenses)
@@ -131,6 +209,6 @@ export default {
     expense = JSON.parse(JSON.stringify(expense))
     expense.date = Moment(expense.date)
     expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
-    return API.expense.save(store.state.repository, expense)
+    return API.expense.save(expense)
   }
 }

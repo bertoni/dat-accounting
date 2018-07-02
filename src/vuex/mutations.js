@@ -53,7 +53,10 @@ export default {
     state.modalConfirm.callbackOk = data.callbackOk || (() => {})
   },
   [types.SET_REPOSITORY] (state, repository) {
-    state.repository = repository || ''
+    state.repository = repository || {}
+  },
+  [types.SET_REPOSITORIES] (state, repositories) {
+    state.repositories = repositories || []
   },
   [types.SET_CATEGORIES] (state, categories) {
     state.categories = (typeof categories === 'object' && categories.length ? categories : ['Food', 'Tax', 'Transport'])

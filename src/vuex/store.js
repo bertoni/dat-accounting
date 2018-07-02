@@ -24,7 +24,8 @@ const state = {
     callbackOk: () => {}
   },
   perfectScrollbars: [],
-  repository: '',
+  repository: {},
+  repositories: [],
   types: ['Fixed', 'Casual', 'Superfluous'],
   situations: ['Pending', 'Settled'],
   categories: ['Food', 'Tax', 'Transport']

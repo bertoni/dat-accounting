@@ -93,6 +93,7 @@ export default {
   width: 100%;
   height: 100%;
   z-index: 2000;
+  background-color: #fff;
 }
 #login .logo img { height: 100%; }
 @-webkit-keyframes autofill {

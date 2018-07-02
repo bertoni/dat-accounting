@@ -66,10 +66,10 @@
                 <img class="avatar" src="../assets/images/avatars/profile.jpg">
                 <i class="status text-green icon-checkbox-marked-circle s-4"></i>
               </div>
-              <span class="username mx-3 d-none d-md-block">John Doe</span>
+              <span class="username mx-3 d-none d-md-block">{{account}}</span>
             </div>
             <div :class="['dropdown-menu', {'show': userMenuOpened}]" aria-labelledby="dropdownUserMenu">
-              <a class="dropdown-item" href="#">
+              <a class="dropdown-item" href="#" @click.prevent="goToMyAccount">
                 <div class="row no-gutters align-items-center flex-nowrap">
                   <i class="icon-account"></i>
                   <span class="px-3">My Profile</span>
@@ -147,9 +147,19 @@ export default {
       userMenuOpened: false
     }
   },
+  computed: {
+    account: function () {
+      return this.$store.getters.currentAccount
+    }
+  },
   methods: {
+    goToMyAccount () {
+      this.userMenuOpened = false
+      this.$router.push({name: 'my-accounts'})
+    },
     logout () {
       this.$store.dispatch('logout')
+      this.userMenuOpened = false
     }
   }
 }
