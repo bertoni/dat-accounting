@@ -3,6 +3,8 @@
 > An application to control your accounting made by Vue.js + Dat
 
 [![Build Status](https://travis-ci.org/bertoni/dat-accounting.svg?branch=master)](https://travis-ci.org/bertoni/dat-accounting)
+[![codecov](https://codecov.io/gh/bertoni/dat-accounting/branch/master/graph/badge.svg)](https://codecov.io/gh/bertoni/dat-accounting)
+
 
 ## Run the projet with Docker
 
