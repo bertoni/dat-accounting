@@ -6,6 +6,7 @@ const mobileDetect = new MobileDetect(window.navigator.userAgent)
 
 export default {
   [types.UPDATE_SCROLLBAR] (state) {
+    /* istanbul ignore next */
     if (!mobileDetect.mobile()) {
       if (state.perfectScrollbars.length) {
         for (let idx in state.perfectScrollbars) {

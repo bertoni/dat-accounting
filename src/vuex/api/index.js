@@ -104,7 +104,7 @@ const API = {
     save: (expense) => {
       return this.a.webdb.current.webdb.expense.upsert(this.a.webdb.current.url + '/expense/' + expense.id + '.json', expense)
     },
-    get: (repository, id) => this.a.webdb.current.webdb.expense.get(this.a.webdb.current.url + '/expense/' + id + '.json')
+    get: (id) => this.a.webdb.current.webdb.expense.get(this.a.webdb.current.url + '/expense/' + id + '.json')
   }
 }
 

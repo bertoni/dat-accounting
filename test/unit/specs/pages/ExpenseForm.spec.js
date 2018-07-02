@@ -95,6 +95,7 @@ describe('ExpenseForm.vue', () => {
     expect(wrapper.props().id).toBe(id)
     expect(wrapper.props().parcelTotal).toBe(parcelTotal)
     expect(wrapper.vm.formValidated).toBeFalsy()
+    expect(wrapper.vm.saving).toBeFalsy()
     expect(typeof wrapper.vm.validation).toBe('object')
     expect(wrapper.vm.validation.date).toBe('')
     expect(wrapper.vm.validation.category).toBe('')
@@ -183,6 +184,7 @@ describe('ExpenseForm.vue', () => {
     wrapper.vm.validation.situation = 'asdnoasjd'
     wrapper.vm.expense.category = 'Pets'
     wrapper.vm.save()
+    expect(wrapper.vm.saving).toBeTruthy()
     expect(storeMocks.actions.createExpense).toBeCalled()
     setTimeout(() => {
       expect(storeMocks.actions.notify).toBeCalled()

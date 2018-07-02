@@ -4,7 +4,8 @@
     <div class="content-wrapper" :style="styleContentWrapper">
       <nav-toolbar-component></nav-toolbar-component>
       <div class="content custom-scrollbar">
-        <router-view/>
+        <router-view
+          v-if="!splashScreen && isLogged" />
       </div>
     </div>
     <quick-panel-component />
@@ -97,11 +98,11 @@ export default {
   },
   mounted () {
     this.$store.dispatch('init')
-    setTimeout(() => { this.$store.dispatch('updateScrollbar') }, 1000)
-    window.addEventListener('resize', () => {
+    setTimeout(/* istanbul ignore next */() => { this.$store.dispatch('updateScrollbar') }, 1000)
+    window.addEventListener('resize', /* istanbul ignore next */() => {
       this.clientHeight = document.documentElement.clientHeight
     })
-    setTimeout(() => {
+    setTimeout(/* istanbul ignore next */() => {
       this.splashScreen = false
     }, 500)
   }

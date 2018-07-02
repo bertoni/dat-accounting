@@ -60,7 +60,10 @@
       </div>
       <div class="form-group form-control-lg col">
         <div class="col"><small class="text-primary-200">The fields with asterisk (*) are required</small></div>
-        <div class="col-auto"><button class="btn btn-primary" @click="submit">Save</button></div>
+        <div class="col-auto">
+          <button v-show="!saving" class="btn btn-primary" @click="submit">Save</button>
+          <button v-show="saving" class="btn btn-primary"><i class="icospinner"></i></button>
+        </div>
       </div>
     </div>
   </form>
@@ -115,6 +118,7 @@ export default {
   },
   data () {
     return {
+      saving: false,
       formValidated: false,
       validation: {
         date: '',
@@ -217,6 +221,7 @@ export default {
       }
     },
     save () {
+      this.saving = true
       if (typeof this.expense.id === 'string' && this.expense.id.length) {
         this.$store.dispatch('updateExpense', this.expense)
           .then(() => {
@@ -224,6 +229,7 @@ export default {
             this.clearValidate()
           })
           .catch(error => this.$store.dispatch('notify', {text: error.message}))
+          .finally(() => { this.saving = false })
       } else {
         this.$store.dispatch('createExpense', this.expense)
           .then(() => {
@@ -232,6 +238,7 @@ export default {
             this.clearExpense()
           })
           .catch(error => this.$store.dispatch('notify', {text: error.message}))
+          .finally(() => { this.saving = false })
       }
     }
   }

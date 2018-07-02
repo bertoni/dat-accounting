@@ -11,34 +11,42 @@ const initCurrentDB = (store, account) => {
       store.commit(types.SET_REPOSITORY, account)
       return API.categories.load()
         .then(categories => store.commit(types.SET_CATEGORIES, categories.categories))
-        .catch(error => { console.warn(error.message) })
+        .catch(/* istanbul ignore next */error => { console.warn(error.message) })
     })
 }
 
 export default {
   init: (store) => {
-    try {
-      let settingsLocalStorage = window.localStorage.settings
-      if (settingsLocalStorage) {
-        settingsLocalStorage = JSON.parse(settingsLocalStorage)
-        if (settingsLocalStorage.repositories.length > 1) {
-          let commit = []
-          for (let idx in settingsLocalStorage.repositories) {
-            commit.push(API.infra.addWebDB(settingsLocalStorage.repositories[idx]))
+    return new Promise((resolve, reject) => {
+      try {
+        let settingsLocalStorage = window.localStorage.settings
+        if (settingsLocalStorage) {
+          settingsLocalStorage = JSON.parse(settingsLocalStorage)
+          if (settingsLocalStorage.repositories.length > 1) {
+            let commit = []
+            for (let idx in settingsLocalStorage.repositories) {
+              commit.push(API.infra.addWebDB(settingsLocalStorage.repositories[idx]))
+            }
+            Promise.all(commit)
+              .then(() => {
+                store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
+                initCurrentDB(store, settingsLocalStorage.repository)
+                  .then(() => resolve('ok'))
+                  .catch(error => { throw error })
+              })
+          } else {
+            store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
+            initCurrentDB(store, settingsLocalStorage.repository)
+              .then(() => resolve('ok'))
+              .catch(error => { throw error })
           }
-          Promise.all(commit)
-            .then(() => {
-              store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
-              initCurrentDB(store, settingsLocalStorage.repository)
-            })
         } else {
-          store.commit(types.SET_REPOSITORIES, settingsLocalStorage.repositories)
-          initCurrentDB(store, settingsLocalStorage.repository)
+          reject(Error('Local Storage unavailable'))
         }
+      } catch (e) {
+        reject(e)
       }
-    } catch (e) {
-      console.warn(e.message)
-    }
+    })
   },
   updateScrollbar: (store) => {
     store.commit(types.UPDATE_SCROLLBAR)
@@ -62,6 +70,7 @@ export default {
     store.commit(types.OPEN_SIDE_MODAL, data)
   },
   notify: (store, data) => {
+    /* istanbul ignore next */
     Vue.prototype.$notify({
       group: (data.group || 'general'),
       type: (data.type || 'warn'),
@@ -150,7 +159,9 @@ export default {
     })
   },
   logout: (store) => {
-    store.commit(types.SET_REPOSITORY, '')
+    store.commit(types.SET_REPOSITORY)
+    store.commit(types.SET_REPOSITORIES)
+    store.commit(types.SET_CATEGORIES)
     window.localStorage.removeItem('settings')
   },
   setCategories: (store, categories) => {
@@ -160,7 +171,7 @@ export default {
           store.commit(types.SET_CATEGORIES, categories)
           resolve(true)
         })
-        .catch(error => reject(error))
+        .catch(/* istanbul ignore next */error => reject(error))
     })
   },
   getExpense: (store, formData) => {
@@ -189,8 +200,8 @@ export default {
     expense = JSON.parse(JSON.stringify(expense))
     expense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
     expense.date = Moment(expense.date)
-    expense.parcelTotal = (expense.parcel > 2 ? expense.parcel : null)
-    expense.parcel = (expense.parcel > 2 ? 1 : 0)
+    expense.parcelTotal = (expense.parcel >= 2 ? expense.parcel : null)
+    expense.parcel = (expense.parcel >= 2 ? 1 : 0)
     expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
     expenses.push(API.expense.save(expense))
     if (expense.parcelTotal) {
