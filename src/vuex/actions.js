@@ -3,7 +3,7 @@ import * as types from './mutation_types'
 import API from './api'
 import Moment from 'moment'
 
-const formatSettingsRepository = (repositories, repository) => ({ repository: repository, repositories: repositories })
+const formatSettingsRepository = (repositories, repository) => ({ 'repository': repository, 'repositories': repositories })
 
 const initCurrentDB = (store, account) => {
   return API.infra.addCurrentWebDB(account)
@@ -19,9 +19,12 @@ export default {
   init: (store) => {
     return new Promise((resolve, reject) => {
       try {
-        let settingsLocalStorage = window.localStorage.settings
+        let settingsLocalStorage = window.localStorage
         if (settingsLocalStorage) {
-          settingsLocalStorage = JSON.parse(settingsLocalStorage)
+          if (!settingsLocalStorage.settings) {
+            throw new Error('Settings is empty')
+          }
+          settingsLocalStorage = JSON.parse(settingsLocalStorage.settings)
           if (settingsLocalStorage.repositories.length > 1) {
             let commit = []
             for (let idx in settingsLocalStorage.repositories) {
@@ -117,8 +120,9 @@ export default {
     return new Promise((resolve, reject) => {
       API.infra.openDB(repository)
         .then(detailDB => {
+          delete detailDB.webdb
           let repositories = []
-          let settingsLocalStorage = window.localStorage.settings
+          let settingsLocalStorage = window.localStorage.settings || false
           if (settingsLocalStorage) {
             repositories = JSON.parse(settingsLocalStorage)
           }

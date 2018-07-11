@@ -70,6 +70,7 @@
 </template>
 
 <script>
+import {validate} from '@/services/expense'
 import Datepicker from 'vuejs-datepicker'
 import {VMoney} from 'v-money'
 export default {
@@ -191,31 +192,8 @@ export default {
     },
     submit () {
       this.clearValidate()
-
-      if (!this.expense.date.toString().trim().length) {
-        this.validation.date = 'Date incorrect'
-      }
-      if (this.categories.indexOf(this.expense.category) < 0) {
-        this.validation.category = 'Choose a category'
-      }
-      if (!this.expense.name.toString().trim().length) {
-        this.validation.name = 'The name is required'
-      }
-      /* istanbul ignore if  */
-      if (!this.expense.price.toString().trim().length) {
-        this.validation.price = 'The price is required'
-      } else if (!parseFloat(this.expense.price.toString().replace(/\$\s/, ''))) {
-        this.validation.price = 'The price should be not empty'
-      }
-      if (this.types.indexOf(this.expense.type) < 0) {
-        this.validation.type = 'Choose a type'
-      }
-      if (this.situations.indexOf(this.expense.situation) < 0) {
-        this.validation.situation = 'Choose a situation'
-      }
-
+      validate(this.expense, this.validation, this.categories, this.types, this.situations)
       this.formValidated = true
-
       if (this.dataIsValidate()) {
         this.save()
       }

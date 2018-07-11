@@ -3,7 +3,7 @@
     <aside-component />
     <div class="content-wrapper" :style="styleContentWrapper">
       <nav-toolbar-component></nav-toolbar-component>
-      <div class="content custom-scrollbar">
+      <div class="content custom-scrollbar" id="wrapper-global">
         <router-view
           v-if="!splashScreen && isLogged" />
       </div>
