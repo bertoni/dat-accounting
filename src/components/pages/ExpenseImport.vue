@@ -2,8 +2,8 @@
   <div id="import-wrapper">
     <form v-on:submit.prevent :class="['expense-import', 'form-wrapper']">
       <p class="lead mt-4 mb-6">If you have a history of expenses, put it in a spreadsheet to import.</p>
-      <p class="lead mt-4 mb-6">Load your spreadsheet below. It should to have a specific format, that you can <a href="#" @click.prevent="downloadExample">download here</a>. The extensions that will be accepted are "xls", "xlsx" and "ods". Remember that first line is header and must be exactly as the example.</p>
-      <p class="lead mt-4 mb-6">The date field should be in a format "YYYY-MM-DD". The price should be in a cents, so "$39.90" must be "3990". The category should respect your registered categories. The only fields that can be empty are parcel and observation.</p>
+      <p class="lead mt-4 mb-6">Load your spreadsheet below. It should to have a specific format, that you can <a href="#" @click.prevent="downloadExample">download here</a>. The extensions that will be accepted are "xls", "xlsx" and "ods". Remember that first line is header and must be exactly as in the example.</p>
+      <p class="lead mt-4 mb-6">The date field should be in a format "YYYY-MM-DD". The price should be in cents, so "$39.90" must be "3990". The category should respect your registered categories. The only fields that can be empty are parcel and observation.</p>
       <input type="file" @change="importSpreadSheet" ref="inputFile">
       <button type="button" class="btn btn-dark ml-5" @click.prevent="importSpreadSheet">
         <span v-show="!importing">Import</span>

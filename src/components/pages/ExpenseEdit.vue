@@ -69,6 +69,11 @@ export default {
       this.expense.situation = expense.situation
       this.expense.observation = expense.observation
       this.loading = false
+      const container = document.querySelector('#wrapper-global')
+      /* istanbul ignore next */
+      if (container && container.scrollTop) {
+        container.scrollTop = 0
+      }
     },
     notFoundExpense () {
       this.$store.dispatch('notify', {type: 'error', text: 'Expense not found'})

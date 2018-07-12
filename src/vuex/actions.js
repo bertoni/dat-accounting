@@ -205,9 +205,9 @@ export default {
     expense = JSON.parse(JSON.stringify(expense))
     expense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
     expense.date = Moment(expense.date)
-    expense.parcelTotal = (scheduling ? (expense.parcel >= 2 ? expense.parcel : 0) : expense.parcelTotal)
-    expense.parcel = (scheduling ? (expense.parcel >= 2 ? 1 : 0) : expense.parcel)
-    expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
+    expense.parcelTotal = parseInt(scheduling ? (expense.parcel >= 2 ? expense.parcel : 0) : expense.parcelTotal)
+    expense.parcel = parseInt(scheduling ? (expense.parcel >= 2 ? 1 : 0) : expense.parcel)
+    expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
     expenses.push(API.expense.save(expense))
     if (scheduling && expense.parcelTotal) {
       for (let i = 2; i <= expense.parcelTotal; i++) {
@@ -224,7 +224,7 @@ export default {
   updateExpense (store, expense) {
     expense = JSON.parse(JSON.stringify(expense))
     expense.date = Moment(expense.date)
-    expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
+    expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
     return API.expense.save(expense)
   }
 }

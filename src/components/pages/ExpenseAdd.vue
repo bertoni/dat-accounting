@@ -60,6 +60,13 @@ export default {
       observation: '',
       importMode: false
     }
+  },
+  mounted () {
+    const container = document.querySelector('#wrapper-global')
+    /* istanbul ignore next */
+    if (container && container.scrollTop) {
+      container.scrollTop = 0
+    }
   }
 }
 </script>
