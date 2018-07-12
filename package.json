@@ -34,7 +34,8 @@
     "vue-notification": "^1.3.10",
     "vue-router": "^3.0.1",
     "vuejs-datepicker": "^1.3.0",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "xlsx": "^0.13.2"
   },
   "devDependencies": {
     "@vue/server-test-utils": "^1.0.0-beta.19",

@@ -22,5 +22,6 @@ describe('ExpenseAdd.vue', () => {
     expect(wrapper.vm.type).toBe('')
     expect(wrapper.vm.situation).toBe('')
     expect(wrapper.vm.observation).toBe('')
+    expect(wrapper.vm.importMode).toBeFalsy()
   })
 })

@@ -139,7 +139,8 @@ export default {
       this.$store.dispatch('getExpense', {
         order: 'date',
         sort: 'DESC',
-        month: this.currentDate.format('MM')
+        month: this.currentDate.format('MM'),
+        year: this.currentDate.format('YYYY')
       })
         .then(data => this.setExpenses(data))
         .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))

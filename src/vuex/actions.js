@@ -3,7 +3,7 @@ import * as types from './mutation_types'
 import API from './api'
 import Moment from 'moment'
 
-const formatSettingsRepository = (repositories, repository) => ({ repository: repository, repositories: repositories })
+const formatSettingsRepository = (repositories, repository) => ({ 'repository': repository, 'repositories': repositories })
 
 const initCurrentDB = (store, account) => {
   return API.infra.addCurrentWebDB(account)
@@ -19,9 +19,12 @@ export default {
   init: (store) => {
     return new Promise((resolve, reject) => {
       try {
-        let settingsLocalStorage = window.localStorage.settings
+        let settingsLocalStorage = window.localStorage
         if (settingsLocalStorage) {
-          settingsLocalStorage = JSON.parse(settingsLocalStorage)
+          if (!settingsLocalStorage.settings) {
+            throw new Error('Settings is empty')
+          }
+          settingsLocalStorage = JSON.parse(settingsLocalStorage.settings)
           if (settingsLocalStorage.repositories.length > 1) {
             let commit = []
             for (let idx in settingsLocalStorage.repositories) {
@@ -117,8 +120,9 @@ export default {
     return new Promise((resolve, reject) => {
       API.infra.openDB(repository)
         .then(detailDB => {
+          delete detailDB.webdb
           let repositories = []
-          let settingsLocalStorage = window.localStorage.settings
+          let settingsLocalStorage = window.localStorage.settings || false
           if (settingsLocalStorage) {
             repositories = JSON.parse(settingsLocalStorage)
           }
@@ -197,20 +201,21 @@ export default {
   },
   createExpense (store, expense) {
     let expenses = []
+    let scheduling = (expense.parcelTotal === undefined || isNaN(parseInt(expense.parcelTotal)))
     expense = JSON.parse(JSON.stringify(expense))
     expense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
     expense.date = Moment(expense.date)
-    expense.parcelTotal = (expense.parcel >= 2 ? expense.parcel : null)
-    expense.parcel = (expense.parcel >= 2 ? 1 : 0)
-    expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
+    expense.parcelTotal = parseInt(scheduling ? (expense.parcel >= 2 ? expense.parcel : 0) : expense.parcelTotal)
+    expense.parcel = parseInt(scheduling ? (expense.parcel >= 2 ? 1 : 0) : expense.parcel)
+    expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
     expenses.push(API.expense.save(expense))
-    if (expense.parcelTotal) {
+    if (scheduling && expense.parcelTotal) {
       for (let i = 2; i <= expense.parcelTotal; i++) {
         let nextExpense = JSON.parse(JSON.stringify(expense))
         nextExpense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
         nextExpense.date = Moment(nextExpense.date).add((i - 1), 'months')
         nextExpense.parcel = i
-        nextExpense.situations = 'Pending'
+        nextExpense.situation = 'Pending'
         expenses.push(API.expense.save(nextExpense))
       }
     }
@@ -219,7 +224,7 @@ export default {
   updateExpense (store, expense) {
     expense = JSON.parse(JSON.stringify(expense))
     expense.date = Moment(expense.date)
-    expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
+    expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
     return API.expense.save(expense)
   }
 }

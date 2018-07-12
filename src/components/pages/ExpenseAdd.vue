@@ -7,14 +7,21 @@
             <span class="logo-icon mr-4">
               <i class="icon icon-barcode-scan s-6"></i>
             </span>
-            <span class="logo-text h4">Add Expense</span>
+            <span class="logo-text h4" v-show="!importMode">Add Expense</span>
+            <span class="logo-text h4" v-show="importMode">Import Expenses</span>
           </div>
         </div>
+      </div>
+
+      <div class="col-auto">
+        <button v-show="!importMode" type="button" class="btn btn-light" @click.prevent="importMode = true"><i class="icon icon-file-excel"></i> Import a list</button>
+        <button v-show="importMode" type="button" class="btn btn-light" @click.prevent="importMode = false"><i class="icon icon-plus-box"></i> Add individual</button>
       </div>
     </div>
 
     <div class="page-content-wrapper p-6">
       <expense-form-component
+        v-show="!importMode"
         :date="date"
         :category="category"
         :name="name"
@@ -23,18 +30,23 @@
         :type="type"
         :situation="situation"
         :observation="observation" />
+
+      <expense-import-component
+        v-show="importMode" />
     </div>
   </div>
 </template>
 
 <script>
 import ExpenseFormComponent from '@/components/pages/ExpenseForm'
+import ExpenseImportComponent from '@/components/pages/ExpenseImport'
 import Moment from 'moment'
 
 export default {
   name: 'ExpenseAdd',
   components: {
-    ExpenseFormComponent
+    ExpenseFormComponent,
+    ExpenseImportComponent
   },
   data () {
     return {
@@ -45,7 +57,15 @@ export default {
       parcel: 0,
       type: '',
       situation: '',
-      observation: ''
+      observation: '',
+      importMode: false
+    }
+  },
+  mounted () {
+    const container = document.querySelector('#wrapper-global')
+    /* istanbul ignore next */
+    if (container && container.scrollTop) {
+      container.scrollTop = 0
     }
   }
 }
