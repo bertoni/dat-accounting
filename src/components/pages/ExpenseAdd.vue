@@ -14,8 +14,8 @@
       </div>
 
       <div class="col-auto">
-        <button v-show="!importMode" type="button" class="btn btn-light" @click.prevent="importMode = true"><i class="icon icon-file-excel"></i> Import SpreadSheet</button>
-        <button v-show="importMode" type="button" class="btn btn-light" @click.prevent="importMode = false"><i class="icon icon-plus-box"></i> Add One Expense</button>
+        <button v-show="!importMode" type="button" class="btn btn-light" @click.prevent="importMode = true"><i class="icon icon-file-excel"></i> Import a list</button>
+        <button v-show="importMode" type="button" class="btn btn-light" @click.prevent="importMode = false"><i class="icon icon-plus-box"></i> Add individual</button>
       </div>
     </div>
 
@@ -32,10 +32,7 @@
         :observation="observation" />
 
       <expense-import-component
-        v-show="importMode"
-        :categories="categories"
-        :types="types"
-        :situations="situations" />
+        v-show="importMode" />
     </div>
   </div>
 </template>
@@ -62,17 +59,6 @@ export default {
       situation: '',
       observation: '',
       importMode: false
-    }
-  },
-  computed: {
-    categories () {
-      return this.$store.state.categories
-    },
-    types () {
-      return this.$store.state.types
-    },
-    situations () {
-      return this.$store.state.situations
     }
   }
 }

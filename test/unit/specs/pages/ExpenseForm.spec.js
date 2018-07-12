@@ -272,7 +272,7 @@ describe('ExpenseForm.vue', () => {
     wrapper.vm.expense.type = ''
     wrapper.vm.expense.situation = ''
     wrapper.vm.submit()
-    expect(wrapper.vm.validation.date).toBe('Date incorrect')
+    expect(wrapper.vm.validation.date).toBe('Date is empty')
     expect(wrapper.vm.validation.category).toBe('Choose a category')
     expect(wrapper.vm.validation.name).toBe('The name is required')
     expect(wrapper.vm.validation.price).toBe('The price should be not empty')

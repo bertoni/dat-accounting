@@ -94,6 +94,9 @@ const API = {
       if (formData.month) {
         query = query.filter(record => parseInt((new Date(record.date)).getMonth() + 1) === parseInt(formData.month))
       }
+      if (formData.year) {
+        query = query.filter(record => parseInt((new Date(record.date)).getFullYear()) === parseInt(formData.year))
+      }
       return query.toArray()
     },
     remove: (id) => {

@@ -201,20 +201,21 @@ export default {
   },
   createExpense (store, expense) {
     let expenses = []
+    let scheduling = (expense.parcelTotal === undefined || isNaN(parseInt(expense.parcelTotal)))
     expense = JSON.parse(JSON.stringify(expense))
     expense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
     expense.date = Moment(expense.date)
-    expense.parcelTotal = (expense.parcel >= 2 ? expense.parcel : null)
-    expense.parcel = (expense.parcel >= 2 ? 1 : 0)
+    expense.parcelTotal = (scheduling ? (expense.parcel >= 2 ? expense.parcel : 0) : expense.parcelTotal)
+    expense.parcel = (scheduling ? (expense.parcel >= 2 ? 1 : 0) : expense.parcel)
     expense.price = parseFloat(expense.price.toString().replace(/\$\s/, ''))
     expenses.push(API.expense.save(expense))
-    if (expense.parcelTotal) {
+    if (scheduling && expense.parcelTotal) {
       for (let i = 2; i <= expense.parcelTotal; i++) {
         let nextExpense = JSON.parse(JSON.stringify(expense))
         nextExpense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
         nextExpense.date = Moment(nextExpense.date).add((i - 1), 'months')
         nextExpense.parcel = i
-        nextExpense.situations = 'Pending'
+        nextExpense.situation = 'Pending'
         expenses.push(API.expense.save(nextExpense))
       }
     }

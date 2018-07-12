@@ -1,5 +1,7 @@
 export const validate = (expense, validation, categories = [], types = [], situations = []) => {
-  if (!expense.date.toString().trim().length) {
+  if (!expense.date) {
+    validation.date = 'Date is empty'
+  } else if (!expense.date.toString().trim().length) {
     validation.date = 'Date incorrect'
   }
   if (!expense.category || !expense.category.toString().trim().length) {
@@ -7,11 +9,10 @@ export const validate = (expense, validation, categories = [], types = [], situa
   } else if (categories.indexOf(expense.category) < 0) {
     validation.category = 'Invalid category'
   }
-  if (!expense.name.toString().trim().length) {
+  if (!expense.name || !expense.name.toString().trim().length) {
     validation.name = 'The name is required'
   }
-  /* istanbul ignore if  */
-  if (!expense.price.toString().trim().length) {
+  if (!expense.price || !expense.price.toString().trim().length) {
     validation.price = 'The price is required'
   } else if (!parseFloat(expense.price.toString().replace(/\$\s/, ''))) {
     validation.price = 'The price should be not empty'
