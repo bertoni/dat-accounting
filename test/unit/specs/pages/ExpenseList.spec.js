@@ -77,6 +77,14 @@ describe('ExpenseList.vue', () => {
     expect(typeof ExpenseList.methods.nextMonth).toBe('function')
   })
 
+  it('should have a changeCalendar method', () => {
+    expect(typeof ExpenseList.methods.changeCalendar).toBe('function')
+  })
+
+  it('should have a openPicker method', () => {
+    expect(typeof ExpenseList.methods.openPicker).toBe('function')
+  })
+
   it('should renders correctly component', () => {
     wrapper = shallowMount(ExpenseList, {
       store: storeMocks.store,
@@ -86,6 +94,7 @@ describe('ExpenseList.vue', () => {
     expect(wrapper.vm.loading).toBeTruthy()
     expect(typeof wrapper.vm.currentDate).toBe('object')
     expect(wrapper.vm.currentDate instanceof Moment).toBeTruthy()
+    expect(wrapper.vm.calendar instanceof Date).toBeTruthy()
     expect(wrapper.vm.dataRemove).toBe('')
     expect(wrapper.vm.expenses).toMatchObject([])
     expect(wrapper.vm.footer).toMatchObject([])
@@ -224,12 +233,23 @@ describe('ExpenseList.vue', () => {
     wrapper.vm.currentDate = Moment()
     wrapper.vm.prevMonth()
     expect(wrapper.vm.currentDate.format('MM')).toBe(Moment().subtract(1, 'months').format('MM'))
+    expect(wrapper.vm.calendar.getFullYear().toString()).toBe(Moment().subtract(1, 'months').format('YYYY'))
+    expect((wrapper.vm.calendar.getMonth() + 1).toString()).toBe(Moment().subtract(1, 'months').format('M'))
   })
 
   it('should to change current month filter to next in nextMonth method', () => {
     wrapper.vm.currentDate = Moment()
     wrapper.vm.nextMonth()
     expect(wrapper.vm.currentDate.format('MM')).toBe(Moment().add(1, 'months').format('MM'))
+    expect(wrapper.vm.calendar.getFullYear().toString()).toBe(Moment().add(1, 'months').format('YYYY'))
+    expect((wrapper.vm.calendar.getMonth() + 1).toString()).toBe(Moment().add(1, 'months').format('M'))
+  })
+
+  it('should to change calendar in changeCalendar method', () => {
+    wrapper.vm.currentDate = Moment()
+    wrapper.vm.calendar = new Date(Moment().subtract(1, 'months').toString())
+    wrapper.vm.changeCalendar()
+    expect(wrapper.vm.currentDate.format('MM')).toBe(Moment().subtract(1, 'months').format('MM'))
   })
 
   it('should to push router in edit method', () => {
