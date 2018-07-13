@@ -15,8 +15,17 @@
       <div class="col-auto">
         <div class="btn-group" role="group">
           <button type="button" class="btn btn-dark" @click.prevent="prevMonth">Prev Month</button>
-          <button type="button" class="btn btn-secondary pl-10 pr-10" disabled>{{labelCurrentDate}}</button>
+          <button type="button" class="btn btn-secondary pl-10 pr-10" @click.prevent="openPicker">{{labelCurrentDate}}</button>
           <button type="button" class="btn btn-dark" @click.prevent="nextMonth">Next Month</button>
+        </div>
+        <div id="control-date-expense">
+          <datepicker
+            :minimumView="'month'"
+            :maximumView="'month'"
+            v-model="calendar"
+            @input="changeCalendar"
+            ref="programaticOpen">
+          </datepicker>
         </div>
       </div>
     </div>
@@ -41,6 +50,7 @@
 </template>
 
 <script>
+import Datepicker from 'vuejs-datepicker'
 import Moment from 'moment'
 import Numeral from 'numeral'
 import TableStriped from '@/components/TableStriped'
@@ -50,11 +60,13 @@ export default {
   name: 'ExpenseList',
   components: {
     TableStriped,
-    LoaderComponent
+    LoaderComponent,
+    Datepicker
   },
   data () {
     return {
       loading: true,
+      calendar: new Date(),
       currentDate: Moment(),
       dataRemove: '',
       expenses: [],
@@ -211,11 +223,20 @@ export default {
     },
     prevMonth () {
       this.currentDate = Moment(this.currentDate).subtract(1, 'months')
+      this.calendar = new Date(this.currentDate.toString())
       this.getExpense()
     },
     nextMonth () {
       this.currentDate = Moment(this.currentDate).add(1, 'months')
+      this.calendar = new Date(this.currentDate.toString())
       this.getExpense()
+    },
+    changeCalendar () {
+      this.currentDate = Moment(this.calendar)
+      this.getExpense()
+    },
+    openPicker () {
+      this.$refs.programaticOpen.showCalendar()
     }
   },
   mounted () {
@@ -238,4 +259,7 @@ export default {
 <style>
 #contacts .table-striped tfoot tr.data-footer { background-color: rgba(230, 226, 101, 0.15); }
 #contacts .table-striped tfoot tr.data-footer:nth-of-type(odd) { background-color: rgba(230, 226, 101, 0.25); }
+#control-date-expense { margin-left: 73px; }
+#control-date-expense .vdp-datepicker input[type="text"] { display: none; }
+#control-date-expense .vdp-datepicker__calendar span { color: #000; }
 </style>
