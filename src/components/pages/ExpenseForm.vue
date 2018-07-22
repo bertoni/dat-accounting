@@ -6,6 +6,7 @@
         <span :class="['hidden', 'custom-select', {'is-valid': (formValidated && (!validation.date.length))}, {'is-invalid': (formValidated && (validation.date.length))}]"></span>
         <datepicker
           :format="'yyyy-MM-dd'"
+          :typeable="true"
           id="dateField"
           placeholder="YYYY-MM-DD"
           v-model="expense.date">
@@ -202,22 +203,24 @@ export default {
       this.saving = true
       if (typeof this.expense.id === 'string' && this.expense.id.length) {
         this.$store.dispatch('updateExpense', this.expense)
-          .then(() => {
-            this.$store.dispatch('notify', {type: 'success', text: 'Updated'})
-            this.clearValidate()
-          })
-          .catch(error => this.$store.dispatch('notify', {text: error.message}))
-          .finally(() => { this.saving = false })
+          .then(() => this.updateSuccess())
+          .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+          .finally(/* istanbul ignore next */() => { this.saving = false })
       } else {
-        this.$store.dispatch('createExpense', this.expense)
-          .then(() => {
-            this.$store.dispatch('notify', {type: 'success', text: 'Saved'})
-            this.clearValidate()
-            this.clearExpense()
-          })
-          .catch(error => this.$store.dispatch('notify', {text: error.message}))
-          .finally(() => { this.saving = false })
+        this.$store.dispatch('createExpenses', this.expense)
+          .then(() => this.createSuccess())
+          .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+          .finally(/* istanbul ignore next */() => { this.saving = false })
       }
+    },
+    createSuccess () {
+      this.$store.dispatch('notify', {type: 'success', text: 'Saved'})
+      this.clearValidate()
+      this.clearExpense()
+    },
+    updateSuccess () {
+      this.$store.dispatch('notify', {type: 'success', text: 'Updated'})
+      this.clearValidate()
     }
   }
 }

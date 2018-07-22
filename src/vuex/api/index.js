@@ -71,7 +71,7 @@ const API = {
   },
   categories: {
     load: () => this.a.webdb.current.webdb.categories.get(this.a.webdb.current.url + '/categories.json'),
-    create: (categories) => this.a.webdb.current.webdb.account.upsert(this.a.webdb.current.url + '/categories.json', {
+    create: (categories) => this.a.webdb.current.webdb.categories.upsert(this.a.webdb.current.url + '/categories.json', {
       lastUpdate: new Date(),
       categories: categories
     })
@@ -104,9 +104,8 @@ const API = {
         .where('id').equals(id)
         .delete()
     },
-    save: (expense) => {
-      return this.a.webdb.current.webdb.expense.upsert(this.a.webdb.current.url + '/expense/' + expense.id + '.json', expense)
-    },
+    create: (expense) => this.a.webdb.current.webdb.expense.put(this.a.webdb.current.url + '/expense/' + expense.id + '.json', expense),
+    update: (expense) => this.a.webdb.current.webdb.expense.upsert(this.a.webdb.current.url + '/expense/' + expense.id + '.json', expense),
     get: (id) => this.a.webdb.current.webdb.expense.get(this.a.webdb.current.url + '/expense/' + id + '.json')
   }
 }

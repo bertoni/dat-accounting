@@ -7,7 +7,7 @@
             <span class="logo-icon mr-4">
               <i class="icon icon-barcode-scan s-6"></i>
             </span>
-            <span class="logo-text h4">Expense List</span>
+            <span class="logo-text h4">Expense List ({{expenseLenth}})</span>
           </div>
         </div>
       </div>
@@ -74,6 +74,9 @@ export default {
     }
   },
   computed: {
+    expenseLenth () {
+      return this.expenses.length
+    },
     labelCurrentDate () {
       return this.currentDate.format('MMMM') + '/' + this.currentDate.format('YYYY')
     },

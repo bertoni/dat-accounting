@@ -35,7 +35,13 @@ jest.mock('./../../../../src/vuex/api/index.js', () => ({
       }
       return Promise.resolve({id: id})
     }),
-    save: jest.fn(expense => {
+    create: jest.fn(expense => {
+      if (expense.id === 0) {
+        return Promise.reject(Error('error'))
+      }
+      return Promise.resolve(true)
+    }),
+    update: jest.fn(expense => {
       if (expense.id === 0) {
         return Promise.reject(Error('error'))
       }
@@ -272,8 +278,22 @@ describe('vuex/actions.js', () => {
       })
   })
 
-  it('should return ok with 2 expenses in createExpense method', () => {
-    actions.createExpense(store, {id: 1, date: '2018-01-01', parcel: 2, price: 1})
+  it('should return error in createExpenses method', () => {
+    actions.createExpenses(store, {id: 0, date: '2018-01-01', parcel: 0, price: 1})
+      .catch(error => {
+        expect(error.message).toBe('error')
+      })
+  })
+
+  it('should return ok in createExpenses method', () => {
+    actions.createExpenses(store, {id: 1, date: '2018-01-01', parcel: 0, price: 1})
+      .then(ret => {
+        expect(ret).toBeTruthy()
+      })
+  })
+
+  it('should return ok with 2 expenses in createExpenses method', () => {
+    actions.createExpenses(store, {id: 1, date: '2018-01-01', parcel: 2, price: 1})
       .then((ret1, ret2) => {
         expect(ret1).toBeTruthy()
         expect(ret2).toBeTruthy()

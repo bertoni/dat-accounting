@@ -17,7 +17,7 @@
           <tr><th>Date</th><th>Category</th><th>Name</th><th>Price</th><th>Parcel</th><th>Parcel Total</th><th>Type</th><th>Situation</th><th>Observation</th><th>Validation</th><th></th></tr>
         </thead>
         <tbody>
-          <tr v-for="(item, itemkey) in expenses" :key="'expenseimport-' + itemkey">
+          <tr v-for="(item, itemkey) in expenses" :key="'expenseimport-' + itemkey" v-if="!item.saved">
             <td>
               <datepicker :format="'yyyy-MM-dd'" placeholder="YYYY-MM-DD" v-model="item.date"></datepicker>
             </td>
@@ -65,7 +65,7 @@
               </small>
             </td>
             <td>
-              <button type="button" class="btn btn-outline-danger btn-remove-expense" title="Remove this expense" @click.prevent="remove(itemkey)"><i class="icon icon-delete-forever s-5"></i></button>
+              <button type="button" class="btn btn-outline-danger btn-remove-expense" title="Remove this expense" @click.prevent="remove(item)"><i class="icon icon-delete-forever s-5"></i></button>
             </td>
           </tr>
         </tbody>
@@ -131,34 +131,43 @@ export default {
       return this.$store.state.situations
     },
     totalExpense () {
-      return this.expenses.length
+      return this.expenses.filter(element => !element.saved).length + ' - ' +
+        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved ? parseFloat(element.price.replace(/(\$|\s)/g, '')) : 0), 0))
     },
     validExpense () {
-      return this.expenses.filter((element) => !Object.keys(element.validation).length).length
+      return this.expenses.filter(element => !element.saved && !Object.keys(element.validation).length).length + ' - ' +
+        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved && !Object.keys(element.validation).length ? parseFloat(element.price.replace(/(\$|\s)/g, '')) : 0), 0))
     },
     invalidExpense () {
-      return this.expenses.filter((element) => Object.keys(element.validation).length).length
+      return this.expenses.filter(element => !element.saved && Object.keys(element.validation).length).length + ' - ' +
+        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved && Object.keys(element.validation).length ? parseFloat(element.price.replace(/(\$|\s)/g, '')) : 0), 0))
     }
   },
   methods: {
-    remove (key) {
-      if (!this.expenses[key]) {
+    exists (item) {
+      return this.expenses.map(elem => elem.key).indexOf(item.key) >= 0
+    },
+    remove (item) {
+      if (!this.exists(item)) {
         this.$store.dispatch('notify', {text: 'Expense not found to remove'})
         return false
       }
-      this.expenses.splice(key, 1)
+      this.expenses = this.expenses.filter(elem => elem.key !== item.key)
       return true
+    },
+    toScroll (scrollSize = 0) {
+      const container = document.querySelector('#wrapper-global')
+      /* istanbul ignore next */
+      if (container && container.scrollTop) {
+        container.scrollTop = scrollSize
+      }
     },
     cancel () {
       this.expenses = []
       this.saving = false
       this.importing = false
       this.$refs.inputFile.value = ''
-      const container = document.querySelector('#wrapper-global')
-      /* istanbul ignore next */
-      if (container && container.scrollTop) {
-        container.scrollTop = 0
-      }
+      this.toScroll(0)
     },
     downloadExample () {
       let wb = XLSX.utils.book_new()
@@ -181,6 +190,8 @@ export default {
       this.expenses = []
       for (let idx in spreadSheet[0]) {
         let expense = {
+          'key': idx,
+          'saved': false,
           'date': spreadSheet[0][idx].Date,
           'category': spreadSheet[0][idx].Category,
           'name': spreadSheet[0][idx].Name,
@@ -246,38 +257,61 @@ export default {
     },
     confirmImport () {
       this.saving = true
-      let expenses = []
-      for (let idx in this.expenses) {
-        /* istanbul ignore else */
-        if (!Object.keys(this.expenses[idx].validation).length) {
-          let expense = this.expenses[idx]
-          delete expense.validation
-          expenses.push(expense)
-        }
-      }
-      if (!expenses.length) {
+      if (!this.expenses.filter(elem => (!Object.keys(elem.validation).length && !elem.saved)).length) {
         this.$store.dispatch('notify', {text: 'Not exists valid expenses to save'})
         this.saving = false
         return false
       }
-      this.saveExpenses(expenses)
-    },
-    saveExpenses (expenses) {
-      let promises = []
-      for (let idx in expenses) {
-        promises.push(this.$store.dispatch('createExpense', expenses[idx]))
+      this.toScroll(0)
+      let lastKey = 0
+      for (let idx in this.expenses) {
+        /* istanbul ignore else */
+        if (!Object.keys(this.expenses[idx].validation).length && !this.expenses[idx].saved) {
+          lastKey = this.expenses[idx].key
+        }
       }
-      Promise.all(promises)
-        .then(() => this.saveExpensesSuccess())
-        .catch(error => this.saveExpensesError(error))
+      for (let idx in this.expenses) {
+        /* istanbul ignore else */
+        if (!Object.keys(this.expenses[idx].validation).length && !this.expenses[idx].saved) {
+          let expense = JSON.parse(JSON.stringify(this.expenses[idx]))
+          delete expense.validation
+          delete expense.saved
+          delete expense.key
+          this.$store.dispatch('createExpense', expense)
+            .then(/* istanbul ignore next */() => { this.expenses[idx].saved = true })
+            .catch(/* istanbul ignore next */error => {
+              if (error.message === 'Timed out while writing file') {
+                this.expenses[idx].saved = true
+              }
+            })
+            .finally(/* istanbul ignore next */() => {
+              if (lastKey === this.expenses[idx].key) {
+                this.saveExpensesSuccess()
+              }
+            })
+        }
+      }
     },
     saveExpensesSuccess () {
-      this.$store.dispatch('notify', {type: 'success', text: 'Expenses saved'})
-      this.cancel()
-    },
-    saveExpensesError (error) {
-      this.$store.dispatch('notify', {text: error.message})
       this.saving = false
+      this.importing = false
+      if (!this.expenses.filter(elem => elem.saved).length) {
+        this.$store.dispatch('notify', {text: 'No was possible save the expenses, please try again'})
+        setTimeout(/* istanbul ignore else */() => {
+          this.toScroll(document.querySelector('#wrapper-global table tfoot').offsetTop)
+        }, 500)
+        return false
+      }
+      if (!this.expenses.filter(elem => !elem.saved).length) {
+        this.$store.dispatch('notify', {type: 'success', text: 'Expenses saved'})
+        this.cancel()
+        return true
+      }
+      this.$store.dispatch('notify', {type: 'success', text: 'Some Expenses was saved, but those on the list still need saved'})
+      setTimeout(/* istanbul ignore else */() => {
+        this.toScroll(document.querySelector('#wrapper-global table tfoot').offsetTop)
+      }, 500)
+      return false
     }
   }
 }

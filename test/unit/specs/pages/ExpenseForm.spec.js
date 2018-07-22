@@ -11,7 +11,7 @@ let storeMocks = createStoreMocks({
   mutations: {},
   actions: {
     notify: jest.fn((store, data) => {}),
-    createExpense: jest.fn((store, expense) => {
+    createExpenses: jest.fn((store, expense) => {
       if (expense.category === 'Food') {
         return Promise.reject(Error('error'))
       }
@@ -54,6 +54,14 @@ describe('ExpenseForm.vue', () => {
 
   it('should have a save method', () => {
     expect(typeof ExpenseForm.methods.save).toBe('function')
+  })
+
+  it('should have a createSuccess method', () => {
+    expect(typeof ExpenseForm.methods.createSuccess).toBe('function')
+  })
+
+  it('should have an updateSuccess method', () => {
+    expect(typeof ExpenseForm.methods.updateSuccess).toBe('function')
   })
 
   it('should renders correctly component', () => {
@@ -174,7 +182,64 @@ describe('ExpenseForm.vue', () => {
     expect(wrapper.vm.dataIsValidate()).toBeFalsy()
   })
 
+  it('should dispatch notify in createSuccess method', () => {
+    wrapper.vm.expense.date = '2018-01-02'
+    wrapper.vm.expense.category = 'Food'
+    wrapper.vm.expense.name = 'Bla'
+    wrapper.vm.expense.parcel = 1
+    wrapper.vm.expense.type = 'Fixed'
+    wrapper.vm.expense.situation = 'Pending'
+    wrapper.vm.expense.observation = 'bla'
+    wrapper.vm.formValidated = true
+    wrapper.vm.validation.date = 'qsdasd'
+    wrapper.vm.validation.category = 'asdnoasjd'
+    wrapper.vm.validation.name = 'asdnoasjd'
+    wrapper.vm.validation.price = 'asdnoasjd'
+    wrapper.vm.validation.type = 'asdnoasjd'
+    wrapper.vm.validation.situation = 'asdnoasjd'
+    wrapper.vm.createSuccess()
+    expect(storeMocks.actions.notify).toBeCalled()
+    expect(wrapper.vm.formValidated).toBeFalsy()
+    expect(typeof wrapper.vm.validation).toBe('object')
+    expect(wrapper.vm.validation.date).toBe('')
+    expect(wrapper.vm.validation.category).toBe('')
+    expect(wrapper.vm.validation.name).toBe('')
+    expect(wrapper.vm.validation.price).toBe('')
+    expect(wrapper.vm.validation.type).toBe('')
+    expect(wrapper.vm.validation.situation).toBe('')
+    expect(wrapper.vm.expense.date).toBe('')
+    expect(wrapper.vm.expense.category).toBe('')
+    expect(wrapper.vm.expense.name).toBe('')
+    expect(wrapper.vm.expense.price.length).toBeGreaterThanOrEqual(1)
+    expect(wrapper.vm.expense.parcel).toBe(0)
+    expect(wrapper.vm.expense.type).toBe('')
+    expect(wrapper.vm.expense.situation).toBe('')
+    expect(wrapper.vm.expense.observation).toBe('')
+    expect(wrapper.vm.expense.parcelTotal).toBe('')
+  })
+
+  it('should dispatch notify in updateSuccess method', () => {
+    wrapper.vm.formValidated = true
+    wrapper.vm.validation.date = 'qsdasd'
+    wrapper.vm.validation.category = 'asdnoasjd'
+    wrapper.vm.validation.name = 'asdnoasjd'
+    wrapper.vm.validation.price = 'asdnoasjd'
+    wrapper.vm.validation.type = 'asdnoasjd'
+    wrapper.vm.validation.situation = 'asdnoasjd'
+    wrapper.vm.updateSuccess()
+    expect(storeMocks.actions.notify).toBeCalled()
+    expect(wrapper.vm.formValidated).toBeFalsy()
+    expect(typeof wrapper.vm.validation).toBe('object')
+    expect(wrapper.vm.validation.date).toBe('')
+    expect(wrapper.vm.validation.category).toBe('')
+    expect(wrapper.vm.validation.name).toBe('')
+    expect(wrapper.vm.validation.price).toBe('')
+    expect(wrapper.vm.validation.type).toBe('')
+    expect(wrapper.vm.validation.situation).toBe('')
+  })
+
   it('should dispatch createExpense with success in save method', () => {
+    wrapper.vm.saving = false
     wrapper.vm.formValidated = true
     wrapper.vm.validation.date = 'qsdasd'
     wrapper.vm.validation.category = 'asdnoasjd'
@@ -185,30 +250,11 @@ describe('ExpenseForm.vue', () => {
     wrapper.vm.expense.category = 'Pets'
     wrapper.vm.save()
     expect(wrapper.vm.saving).toBeTruthy()
-    expect(storeMocks.actions.createExpense).toBeCalled()
-    setTimeout(() => {
-      expect(storeMocks.actions.notify).toBeCalled()
-      expect(wrapper.vm.formValidated).toBeFalsy()
-      expect(typeof wrapper.vm.validation).toBe('object')
-      expect(wrapper.vm.validation.date).toBe('')
-      expect(wrapper.vm.validation.category).toBe('')
-      expect(wrapper.vm.validation.name).toBe('')
-      expect(wrapper.vm.validation.price).toBe('')
-      expect(wrapper.vm.validation.type).toBe('')
-      expect(wrapper.vm.validation.situation).toBe('')
-      expect(wrapper.vm.expense.date).toBe('')
-      expect(wrapper.vm.expense.category).toBe('')
-      expect(wrapper.vm.expense.name).toBe('')
-      expect(wrapper.vm.expense.price.length).toBeGreaterThanOrEqual(1)
-      expect(wrapper.vm.expense.parcel).toBe(0)
-      expect(wrapper.vm.expense.type).toBe('')
-      expect(wrapper.vm.expense.situation).toBe('')
-      expect(wrapper.vm.expense.observation).toBe('')
-      expect(wrapper.vm.expense.parcelTotal).toBe('')
-    }, 100)
+    expect(storeMocks.actions.createExpenses).toBeCalled()
   })
 
   it('should dispatch createExpense with error in save method', () => {
+    wrapper.vm.saving = false
     wrapper.vm.expense.date = '2018-01-02'
     wrapper.vm.expense.category = 'Food'
     wrapper.vm.expense.name = 'Bla'
@@ -217,20 +263,12 @@ describe('ExpenseForm.vue', () => {
     wrapper.vm.expense.situation = 'Pending'
     wrapper.vm.expense.observation = 'bla'
     wrapper.vm.save()
-    expect(storeMocks.actions.createExpense).toBeCalled()
-    setTimeout(() => {
-      expect(storeMocks.actions.notify).toBeCalled()
-      expect(wrapper.vm.expense.date).toBe('2018-01-02')
-      expect(wrapper.vm.expense.category).toBe('Food')
-      expect(wrapper.vm.expense.name).toBe('Bla')
-      expect(wrapper.vm.expense.parcel).toBe(1)
-      expect(wrapper.vm.expense.type).toBe('Fixed')
-      expect(wrapper.vm.expense.situation).toBe('Pending')
-      expect(wrapper.vm.expense.observation).toBe('bla')
-    }, 100)
+    expect(wrapper.vm.saving).toBeTruthy()
+    expect(storeMocks.actions.createExpenses).toBeCalled()
   })
 
   it('should dispatch updateExpense with success in save method', () => {
+    wrapper.vm.saving = false
     wrapper.vm.formValidated = true
     wrapper.vm.validation.date = 'qsdasd'
     wrapper.vm.validation.category = 'asdnoasjd'
@@ -241,28 +279,17 @@ describe('ExpenseForm.vue', () => {
     wrapper.vm.expense.category = 'Pets'
     wrapper.vm.expense.id = '1p21idosoc'
     wrapper.vm.save()
+    expect(wrapper.vm.saving).toBeTruthy()
     expect(storeMocks.actions.updateExpense).toBeCalled()
-    setTimeout(() => {
-      expect(storeMocks.actions.notify).toBeCalled()
-      expect(wrapper.vm.formValidated).toBeFalsy()
-      expect(typeof wrapper.vm.validation).toBe('object')
-      expect(wrapper.vm.validation.date).toBe('')
-      expect(wrapper.vm.validation.category).toBe('')
-      expect(wrapper.vm.validation.name).toBe('')
-      expect(wrapper.vm.validation.price).toBe('')
-      expect(wrapper.vm.validation.type).toBe('')
-      expect(wrapper.vm.validation.situation).toBe('')
-    }, 100)
   })
 
   it('should dispatch updateExpense with error in save method', () => {
+    wrapper.vm.saving = false
     wrapper.vm.expense.category = 'Food'
     wrapper.vm.expense.id = '1p21idosoc'
     wrapper.vm.save()
+    expect(wrapper.vm.saving).toBeTruthy()
     expect(storeMocks.actions.updateExpense).toBeCalled()
-    setTimeout(() => {
-      expect(storeMocks.actions.notify).toBeCalled()
-    }, 100)
   })
 
   it('should to set validations without save in submit method', () => {

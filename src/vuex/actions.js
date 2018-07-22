@@ -5,12 +5,14 @@ import Moment from 'moment'
 
 const formatSettingsRepository = (repositories, repository) => ({ 'repository': repository, 'repositories': repositories })
 
+const generateExpenseID = () => (Date.now() + Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+
 const initCurrentDB = (store, account) => {
   return API.infra.addCurrentWebDB(account)
     .then(() => {
       store.commit(types.SET_REPOSITORY, account)
       return API.categories.load()
-        .then(categories => store.commit(types.SET_CATEGORIES, categories.categories))
+        .then(categories => store.commit(types.SET_CATEGORIES, (categories ? categories.categories : '')))
         .catch(/* istanbul ignore next */error => { console.warn(error.message) })
     })
 }
@@ -199,32 +201,41 @@ export default {
         .catch(error => reject(error))
     })
   },
-  createExpense (store, expense) {
+  createExpenses (store, expense) {
     let expenses = []
     let scheduling = (expense.parcelTotal === undefined || isNaN(parseInt(expense.parcelTotal)))
     expense = JSON.parse(JSON.stringify(expense))
-    expense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+    expense.id = generateExpenseID()
     expense.date = Moment(expense.date)
     expense.parcelTotal = parseInt(scheduling ? (expense.parcel >= 2 ? expense.parcel : 0) : expense.parcelTotal)
     expense.parcel = parseInt(scheduling ? (expense.parcel >= 2 ? 1 : 0) : expense.parcel)
     expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
-    expenses.push(API.expense.save(expense))
+    expenses.push(API.expense.create(expense))
     if (scheduling && expense.parcelTotal) {
       for (let i = 2; i <= expense.parcelTotal; i++) {
         let nextExpense = JSON.parse(JSON.stringify(expense))
-        nextExpense.id = (Date.now().toString(36) + Math.random().toString(36).substr(2, 5)).toUpperCase()
+        nextExpense.id = generateExpenseID()
         nextExpense.date = Moment(nextExpense.date).add((i - 1), 'months')
         nextExpense.parcel = i
         nextExpense.situation = 'Pending'
-        expenses.push(API.expense.save(nextExpense))
+        expenses.push(API.expense.create(nextExpense))
       }
     }
     return Promise.all(expenses)
+  },
+  createExpense (store, expense) {
+    expense = JSON.parse(JSON.stringify(expense))
+    expense.id = generateExpenseID()
+    expense.date = Moment(expense.date)
+    expense.parcelTotal = expense.parcelTotal || 0
+    expense.parcel = parseInt(expense.parcel || 0)
+    expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
+    return API.expense.create(expense)
   },
   updateExpense (store, expense) {
     expense = JSON.parse(JSON.stringify(expense))
     expense.date = Moment(expense.date)
     expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
-    return API.expense.save(expense)
+    return API.expense.update(expense)
   }
 }
