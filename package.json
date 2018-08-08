@@ -29,6 +29,7 @@
     "numeral": "^2.0.6",
     "perfect-scrollbar": "^1.4.0",
     "tiny-cookie": "^2.1.2",
+    "v-autocomplete": "^1.8.2",
     "v-money": "^0.8.1",
     "velocity-animate": "^1.5.1",
     "vue": "^2.5.2",

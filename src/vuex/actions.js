@@ -23,6 +23,9 @@ export default {
       try {
         let settingsLocalStorage = window.localStorage
         if (settingsLocalStorage) {
+          if (settingsLocalStorage.location) {
+            store.commit(types.SET_LOCATION, JSON.parse(settingsLocalStorage.location))
+          }
           if (!settingsLocalStorage.settings) {
             throw new Error('Settings is empty')
           }
@@ -170,6 +173,17 @@ export default {
     store.commit(types.SET_REPOSITORIES)
     store.commit(types.SET_CATEGORIES)
     window.localStorage.removeItem('settings')
+  },
+  setLocation: (store, location) => {
+    store.commit(types.SET_LOCATION, location)
+    window.localStorage.setItem('location', JSON.stringify(location))
+  },
+  removeLocation: (store) => {
+    store.commit(types.REMOVE_LOCATION)
+    window.localStorage.removeItem('location')
+  },
+  setCurrentWeather: (store, currentWeather) => {
+    store.commit(types.SET_CURRENT_WEATHER, currentWeather)
   },
   setCategories: (store, categories) => {
     return new Promise((resolve, reject) => {

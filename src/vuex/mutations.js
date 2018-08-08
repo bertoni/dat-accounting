@@ -61,5 +61,14 @@ export default {
   },
   [types.SET_CATEGORIES] (state, categories) {
     state.categories = (typeof categories === 'object' && categories.length ? categories : ['Food', 'Tax', 'Transport'])
+  },
+  [types.SET_LOCATION] (state, location) {
+    state.location.currentLocation = location
+  },
+  [types.REMOVE_LOCATION] (state) {
+    state.location.currentLocation = {}
+  },
+  [types.SET_CURRENT_WEATHER] (state, currentWeather) {
+    state.location.currentWeather = currentWeather
   }
 }
