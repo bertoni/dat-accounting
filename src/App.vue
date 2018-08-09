@@ -98,6 +98,7 @@ export default {
   },
   mounted () {
     this.$store.dispatch('init')
+      .catch(/* istanbul ignore next */error => console.warn(error.message))
     setTimeout(/* istanbul ignore next */() => { this.$store.dispatch('updateScrollbar') }, 1000)
     window.addEventListener('resize', /* istanbul ignore next */() => {
       this.clientHeight = document.documentElement.clientHeight

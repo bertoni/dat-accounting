@@ -30,5 +30,9 @@
 
     docker-compose -f infra/docker-compose.yml up -d
 
+# Generate build to share with Dat
+
+    docker run -it --rm --user node -v /path/your/project/:/var/www/app -v /path/your/localtime:/etc/localtime node:8 npm --prefix /var/www/app/ run build
+
 
 ```

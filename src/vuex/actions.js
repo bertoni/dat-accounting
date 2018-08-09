@@ -136,8 +136,9 @@ export default {
           window.localStorage.setItem('settings', JSON.stringify(settings))
           store.commit(types.SET_REPOSITORY, detailDB)
           store.commit(types.SET_REPOSITORIES, repositories)
-          resolve(true)
+          return initCurrentDB(store, detailDB)
         })
+        .then(() => { resolve('Changed Account') })
         .catch(error => reject(error))
     })
   },

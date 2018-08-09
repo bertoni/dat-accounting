@@ -98,9 +98,11 @@ export default {
       if (event) {
         event.preventDefault()
       }
+      this.loading = true
       this.$store.dispatch('changeAccount', data.key)
         .then(/* istanbul ignore next */message => this.$store.dispatch('notify', {type: 'success', text: message}))
         .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+        .finally(() => { this.loading = false })
     },
     importAccountWithSuccess () {
       this.repositoryLink = ''
@@ -134,9 +136,7 @@ export default {
         .then(/* istanbul ignore next */repository => this.$store.dispatch('importRepository', repository))
         .then(/* istanbul ignore next */() => this.$store.dispatch('notify', {text: 'Account created', type: 'success'}))
         .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
-        .finally(/* istanbul ignore next */() => {
-          this.loading = false
-        })
+        .finally(/* istanbul ignore next */() => { this.loading = false })
     }
   },
   watch: {

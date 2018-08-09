@@ -8,9 +8,12 @@
 
         <div class="title mt-4 mb-8">Dat Accounting APP</div>
 
-        <div class="mt-4 mb-4">If you have already an account, please enter your dat link</div>
+        <loader-component
+          v-show="loading" />
 
-        <form :class="[{'was-validated': formValidated}]" v-on:submit.prevent>
+        <div v-show="!loading" class="mt-4 mb-4">If you have already an account, please enter your dat link</div>
+
+        <form v-show="!loading" :class="[{'was-validated': formValidated}]" v-on:submit.prevent>
           <div class="form-group mb-4">
             <input type="text" :class="classInputLink" id="linkInput" v-model="link" required @keyup.13="submit" ref="link" placeholder="dat://981091029du018dn91y9dajscia">
             <label for="linkInput">Link account address</label>
@@ -20,9 +23,9 @@
           <button type="submit" class="submit-button btn btn-block btn-secondary my-4 mx-auto fuse-ripple-ready" @click="submit">Enter</button>
         </form>
 
-        <div class="mt-10 mb-4">Do not have an account? create one bellow</div>
+        <div v-show="!loading" class="mt-10 mb-4">Do not have an account? create one bellow</div>
 
-        <button type="submit" class="submit-button btn btn-block btn-secondary my-4 mx-auto fuse-ripple-ready" @click="create">Create</button>
+        <button v-show="!loading" type="submit" class="submit-button btn btn-block btn-secondary my-4 mx-auto fuse-ripple-ready" @click="create">Create</button>
 
       </div>
     </div>
@@ -31,10 +34,16 @@
 </template>
 
 <script>
+import LoaderComponent from '@/components/Loader'
+
 export default {
   name: 'Login',
+  components: {
+    LoaderComponent
+  },
   data () {
     return {
+      loading: false,
       formValidated: false,
       infoLink: '',
       link: '',
@@ -52,11 +61,20 @@ export default {
     }
   },
   methods: {
+    success (message) {
+      this.$store.dispatch('notify', {text: message, type: 'success'})
+      this.link = ''
+      this.infoLink = ''
+      this.formValidated = false
+      this.$router.push({name: 'dashboard'})
+    },
     create () {
+      this.loading = true
       this.$store.dispatch('createAccount')
         .then(/* istanbul ignore next */repository => this.$store.dispatch('setRepository', repository))
-        .then(/* istanbul ignore next */() => this.$store.dispatch('notify', {text: 'Welcome!', type: 'success'}))
+        .then(/* istanbul ignore next */() => this.success('Welcome!'))
         .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+        .finally(/* istanbul ignore next */() => { this.loading = false })
     },
     submit () {
       let re = /^dat:\/\/[a-z0-9]+$/
@@ -72,9 +90,11 @@ export default {
       this.formValidated = true
 
       if (!this.infoLink.length) {
+        this.loading = true
         this.$store.dispatch('setRepository', this.link)
-          .then(/* istanbul ignore next */() => this.$store.dispatch('notify', {text: 'Welcome back!', type: 'success'}))
+          .then(/* istanbul ignore next */() => this.success('Welcome back!'))
           .catch(/* istanbul ignore next */error => this.$store.dispatch('notify', {text: error.message}))
+          .finally(/* istanbul ignore next */() => { this.loading = false })
       }
     }
   },

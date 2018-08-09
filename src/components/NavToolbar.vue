@@ -64,7 +64,6 @@
             <div class="dropdown-toggle ripple row align-items-center no-gutters px-2 px-sm-4" id="dropdownUserMenu" @click="userMenuOpened = !userMenuOpened">
               <div class="avatar-wrapper">
                 <img class="avatar" src="../assets/images/avatars/profile.jpg">
-                <i class="status text-green icon-checkbox-marked-circle s-4"></i>
               </div>
               <span class="username mx-3 d-none d-md-block">{{account}}</span>
             </div>
