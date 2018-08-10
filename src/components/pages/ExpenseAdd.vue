@@ -7,8 +7,8 @@
             <span class="logo-icon mr-4">
               <i class="icon icon-barcode-scan s-6"></i>
             </span>
-            <span class="logo-text h4" v-show="!importMode">Add Expense</span>
-            <span class="logo-text h4" v-show="importMode">Import Expenses</span>
+            <span class="logo-text h4 text-white-500" v-show="!importMode">Add Expense</span>
+            <span class="logo-text h4 text-white-500" v-show="importMode">Import Expenses</span>
           </div>
         </div>
       </div>

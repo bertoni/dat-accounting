@@ -7,7 +7,7 @@
             <span class="logo-icon mr-4">
               <i class="icon icon-barcode-scan s-6"></i>
             </span>
-            <span class="logo-text h4">Expense Edit</span>
+            <span class="logo-text h4 text-white-500">Expense Edit</span>
           </div>
         </div>
       </div>

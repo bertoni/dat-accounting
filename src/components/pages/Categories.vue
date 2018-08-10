@@ -7,7 +7,7 @@
             <span class="logo-icon mr-4">
               <i class="icon icon-label-outline s-6"></i>
             </span>
-            <span class="logo-text h4">Categories ({{categories.length}})</span>
+            <span class="logo-text h4 text-white-500">Categories ({{categories.length}})</span>
           </div>
         </div>
       </div>

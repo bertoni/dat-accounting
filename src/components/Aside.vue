@@ -64,5 +64,6 @@ export default {
 <style scoped>
 .logo-icon { background-color: transparent !important; }
 .logo-icon img { height: 28px; }
-.logo-text { font-size: 1.2em !important; margin-top: 5px; font-weight: bold !important; }
+.logo-text { font-size: 1.2em !important; margin-top: 5px; font-weight: bold !important; color: #fff !important; }
+.nav-item a span { color: #fff !important; }
 </style>
