@@ -132,15 +132,15 @@ export default {
     },
     totalExpense () {
       return this.expenses.filter(element => !element.saved).length + ' - ' +
-        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved ? parseFloat(element.price.replace(/(\$|\s)/g, '')) : 0), 0))
+        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved ? parseFloat(element.price.replace(/(\$|\s|,)/g, '')) : 0), 0))
     },
     validExpense () {
       return this.expenses.filter(element => !element.saved && !Object.keys(element.validation).length).length + ' - ' +
-        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved && !Object.keys(element.validation).length ? parseFloat(element.price.replace(/(\$|\s)/g, '')) : 0), 0))
+        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved && !Object.keys(element.validation).length ? parseFloat(element.price.replace(/(\$|\s|,)/g, '')) : 0), 0))
     },
     invalidExpense () {
       return this.expenses.filter(element => !element.saved && Object.keys(element.validation).length).length + ' - ' +
-        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved && Object.keys(element.validation).length ? parseFloat(element.price.replace(/(\$|\s)/g, '')) : 0), 0))
+        this.money.format(this.expenses.reduce((sum, element) => sum + (!element.saved && Object.keys(element.validation).length ? parseFloat(element.price.replace(/(\$|\s|,)/g, '')) : 0), 0))
     }
   },
   methods: {

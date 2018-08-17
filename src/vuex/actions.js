@@ -238,5 +238,15 @@ export default {
     expense.date = Moment(expense.date)
     expense.price = parseFloat(expense.price.toString().replace(/(\$|\s|,)/g, ''))
     return API.expense.update(expense)
+  },
+  getReportById (store, id) {
+    return new Promise((resolve, reject) => {
+      API.report.get(id)
+        .then(report => resolve(report))
+        .catch(error => reject(error))
+    })
+  },
+  updateReport (store, data) {
+    return API.report.update(data.id, data.report)
   }
 }

@@ -319,4 +319,14 @@ describe('ExpenseList.vue', () => {
     ]
     expect(wrapper.vm.superfluousPercent).toBe(((27.5 * 100) / (10.5 + 20.3 + 27.5)) * 100)
   })
+
+  it('should to call showCalendar in openPicker method', () => {
+    wrapper.vm.$refs.programaticOpen = {
+      showCalendar: jest.fn(function () {
+        return true
+      })
+    }
+    wrapper.vm.openPicker()
+    expect(wrapper.vm.$refs.programaticOpen.showCalendar).toBeCalled()
+  })
 })

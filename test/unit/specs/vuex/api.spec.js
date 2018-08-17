@@ -50,6 +50,14 @@ const WebDB = function (name) {
       return Promise.resolve(true)
     })
   }
+  this.report = {
+    get: jest.fn(function () {
+      return Promise.resolve(true)
+    }),
+    upsert: jest.fn(function () {
+      return Promise.resolve(true)
+    })
+  }
 }
 
 jest.mock('@beaker/webdb', () => {
@@ -84,6 +92,7 @@ describe('vuex/api/index.js', () => {
     expect(typeof API.infra).toBe('object')
     expect(typeof API.categories).toBe('object')
     expect(typeof API.expense).toBe('object')
+    expect(typeof API.report).toBe('object')
   })
 
   it('should to have properties on API.webdb', () => {
@@ -117,6 +126,11 @@ describe('vuex/api/index.js', () => {
     expect(typeof API.expense.get).toBe('function')
   })
 
+  it('should to have functions on API.report', () => {
+    expect(typeof API.report.get).toBe('function')
+    expect(typeof API.report.update).toBe('function')
+  })
+
   it('should be an object on infra.checkDB function', () => {
     API.infra.checkDB('dat://aaisoaocamoc')
     expect(global.DatArchive.load).toBeCalled()
@@ -127,6 +141,22 @@ describe('vuex/api/index.js', () => {
       readdir: jest.fn(() => Promise.resolve(true))
     }
     API.infra.makeStructure(archive)
+    expect(archive.readdir).toBeCalled()
+  })
+
+  it('should return true on infra.createExpenseDir function', () => {
+    const archive = {
+      readdir: jest.fn(() => Promise.resolve(true))
+    }
+    API.infra.createExpenseDir(archive)
+    expect(archive.readdir).toBeCalled()
+  })
+
+  it('should return true on infra.createReportDir function', () => {
+    const archive = {
+      readdir: jest.fn(() => Promise.resolve(true))
+    }
+    API.infra.createReportDir(archive)
     expect(archive.readdir).toBeCalled()
   })
 
@@ -157,7 +187,6 @@ describe('vuex/api/index.js', () => {
     API.infra.addCurrentWebDB({key: 1, url: ''})
     expect(API.webdb.current.webdb.define).toBeCalled()
     expect(API.webdb.current.webdb.open).toBeCalled()
-    expect(API.webdb.current.webdb.indexArchive).toBeCalled()
   })
 
   it('should remove WebDB in webdb.options on infra.removeWebDB function', () => {
@@ -201,6 +230,22 @@ describe('vuex/api/index.js', () => {
 
     API.categories.create()
     expect(API.webdb.current.webdb.categories.upsert).toBeCalled()
+  })
+
+  it('should be called report.get on report.get function', () => {
+    API.webdb.current = {}
+    API.webdb.current.webdb = new WebDB('bla')
+
+    API.report.get()
+    expect(API.webdb.current.webdb.report.get).toBeCalled()
+  })
+
+  it('should be called report.update on report.upsert function', () => {
+    API.webdb.current = {}
+    API.webdb.current.webdb = new WebDB('bla')
+
+    API.report.update()
+    expect(API.webdb.current.webdb.report.upsert).toBeCalled()
   })
 
   it('should be called expense.query on expense.list function', () => {

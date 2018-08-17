@@ -1,28 +1,34 @@
 <template>
   <div id="project-dashboard" class="page-layout simple right-sidebar">
     <div class="page-content-wrapper custom-scrollbar" data-ps-id="8afaf382-4a1a-8758-5eb1-8754136dda56">
-      <div class="page-header bg-secondary text-auto d-flex flex-column justify-content-between px-6 pt-4 pb-0">
-        <div class="row no-gutters align-items-start justify-content-between flex-nowrap">
+      <div class="page-header bg-secondary text-auto d-flex justify-content-between px-6 pt-4 pb-0">
+        <div class="col no-gutters align-items-start justify-content-between flex-nowrap">
           <div>
-            <span class="h2 text-white-500">Welcome back, John!</span>
+            <span class="h2 text-white-500">Dashboard</span>
           </div>
           <button type="button" class="sidebar-toggle-button btn btn-icon d-block d-xl-none fuse-ripple-ready" data-fuse-bar-toggle="dashboard-project-sidebar" aria-label="Toggle sidebar">
             <i class="icon icon-menu"></i>
           </button>
         </div>
-
-        <!-- <div class="row no-gutters align-items-center project-selection">
-          <div class="selected-project h6 px-4 py-2">ACME Corp. Backend App</div>
-          <div class="project-selector">
-            <button type="button" class="btn btn-icon fuse-ripple-ready">
-              <i class="icon icon-dots-horizontal"></i>
-            </button>
-          </div>
-        </div> -->
+        <div class="col-auto">
+          <p class="title h6"><span class="small">Date of Report: </span>{{dateReport}}</p>
+          <select class="h6 custom-select" v-model="activeMonth" @change="mountCharts">
+            <option value="previous">Previous Month</option>
+            <option value="current">Current Month</option>
+            <option value="next">Next Month</option>
+          </select>
+          <button type="button" class="btn btn-icon fuse-ripple-ready" @click.prevent="createReport">
+            <i class="icon icon-refresh"></i> Update Data
+          </button>
+        </div>
       </div>
 
       <div class="page-content">
-        <div class="tab-content">
+        <div v-show="loading" id="loading">
+          <loader-component />
+        </div>
+
+        <div v-show="!loading" class="tab-content">
           <div class="tab-pane fade p-3 active show" id="home-tab-pane">
             <!-- WIDGET GROUP -->
             <div class="widget-group row no-gutters">
@@ -31,23 +37,16 @@
                 <div class="widget widget1 card">
                   <div class="widget-header pl-4 pr-2 row no-gutters align-items-center justify-content-between">
                     <div class="col">
-                      <select class="h6 custom-select">
-                        <option selected="" value="today">Today</option>
-                        <option value="yesterday">Yesterday</option>
-                        <option value="tomorrow">Tomorrow</option>
-                      </select>
+                      <span class="h6">Total</span>
                     </div>
-                    <button type="button" class="btn btn-icon fuse-ripple-ready">
-                      <i class="icon icon-dots-vertical"></i>
-                    </button>
                   </div>
                   <div class="widget-content pt-2 pb-8 d-flex flex-column align-items-center justify-content-center">
-                    <div class="title text-secondary">25</div>
-                    <div class="sub-title h6 text-muted">DUE TASKS</div>
+                    <div class="title text-secondary">{{valueExpenses}}</div>
+                    <div class="sub-title h6 text-muted">Total Price of Expenses</div>
                   </div>
                   <div class="widget-footer p-4 bg-light row no-gutters align-items-center">
-                    <span class="text-muted">Completed:</span>
-                    <span class="ml-2">7</span>
+                    <span class="text-muted">Quantity:</span>
+                    <span class="ml-2">{{quantityExpenses}}</span>
                   </div>
                 </div>
               </div>
@@ -58,19 +57,16 @@
                 <div class="widget widget2 card">
                   <div class="widget-header pl-4 pr-2 row no-gutters align-items-center justify-content-between">
                     <div class="col">
-                      <span class="h6">Overdue</span>
+                      <span class="h6">Settled</span>
                     </div>
-                    <button type="button" class="btn btn-icon fuse-ripple-ready">
-                      <i class="icon icon-dots-vertical"></i>
-                    </button>
                   </div>
                   <div class="widget-content pt-2 pb-8 d-flex flex-column align-items-center justify-content-center">
-                    <div class="title text-danger">4</div>
-                    <div class="sub-title h6 text-muted">TASKS</div>
+                    <div class="title text-info">{{valueSettled}}</div>
+                    <div class="sub-title h6 text-muted">Price Settled</div>
                   </div>
                   <div class="widget-footer p-4 bg-light row no-gutters align-items-center">
-                    <span class="text-muted">Yesterday's:</span>
-                    <span class="ml-2">2</span>
+                    <span class="text-muted">Quantity:</span>
+                    <span class="ml-2">{{quantitySettled}}</span>
                   </div>
                 </div>
               </div>
@@ -81,19 +77,16 @@
                 <div class="widget widget3 card">
                   <div class="widget-header pl-4 pr-2 row no-gutters align-items-center justify-content-between">
                     <div class="col">
-                      <span class="h6">Issues</span>
+                      <span class="h6">Pending</span>
                     </div>
-                    <button type="button" class="btn btn-icon fuse-ripple-ready">
-                      <i class="icon icon-dots-vertical"></i>
-                    </button>
                   </div>
                   <div class="widget-content pt-2 pb-8 d-flex flex-column align-items-center justify-content-center">
-                    <div class="title text-warning">32</div>
-                    <div class="sub-title h6 text-muted">OPEN</div>
+                    <div class="title text-danger">{{valuePending}}</div>
+                    <div class="sub-title h6 text-muted">Price Pending</div>
                   </div>
                   <div class="widget-footer p-4 bg-light row no-gutters align-items-center">
-                    <span class="text-muted">Closed today:</span>
-                    <span class="ml-2">0</span>
+                    <span class="text-muted">Quantity:</span>
+                    <span class="ml-2">{{quantityPending}}</span>
                   </div>
                 </div>
               </div>
@@ -104,23 +97,50 @@
                 <div class="widget widget4 card">
                   <div class="widget-header pl-4 pr-2 row no-gutters align-items-center justify-content-between">
                     <div class="col">
-                      <span class="h6">Features</span>
+                      <span class="h6">Most Expensive Category</span>
                     </div>
-                    <button type="button" class="btn btn-icon fuse-ripple-ready">
-                      <i class="icon icon-dots-vertical"></i>
-                    </button>
                   </div>
                   <div class="widget-content pt-2 pb-8 d-flex flex-column align-items-center justify-content-center">
-                    <div class="title text-info">42</div>
-                    <div class="sub-title h6 text-muted">PROPOSALS</div>
+                    <div class="title text-warning">{{categoryMostExpensive.price}}</div>
+                    <div class="sub-title h6 text-muted">{{categoryMostExpensive.name}}</div>
                   </div>
                   <div class="widget-footer p-4 bg-light row no-gutters align-items-center">
-                    <span class="text-muted">Implemented:</span>
-                    <span class="ml-2">8</span>
+                    <span class="text-muted">Quantity:</span>
+                    <span class="ml-2">{{categoryMostExpensive.quantity}}</span>
                   </div>
                 </div>
               </div>
               <!-- / WIDGET 4 -->
+
+              <!-- WIDGET 5 -->
+              <div class="col-sm-12 col-xl-6 p-3">
+                <div class="widget widget5 card">
+                  <div class="widget-header pl-4 pr-2 row no-gutters align-items-center justify-content-between">
+                    <div class="col">
+                      <span class="h6">Expense By Type</span>
+                    </div>
+                  </div>
+                  <div class="widget-content p-2">
+                    <canvas ref="expenseByType"></canvas>
+                  </div>
+                </div>
+              </div>
+              <!-- / WIDGET 5 -->
+
+              <!-- WIDGET 6 -->
+              <div class="col-sm-12 col-xl-6 p-3">
+                <div class="widget widget6 card">
+                  <div class="widget-header pl-4 pr-2 row no-gutters align-items-center justify-content-between">
+                    <div class="col">
+                      <span class="h6">Expense By Category</span>
+                    </div>
+                  </div>
+                  <div class="widget-content p-2">
+                    <canvas ref="expenseByCategory"></canvas>
+                  </div>
+                </div>
+              </div>
+              <!-- / WIDGET 6 -->
 
               <!-- WIDGET 5 -->
               <!-- <div class="col-12 p-3">
@@ -244,7 +264,7 @@
               <!-- / WIDGET 6 -->
 
               <!-- WIDGET 7 -->
-              <div class="col-12 col-lg-6 p-3">
+              <!-- <div class="col-12 col-lg-6 p-3">
                 <div class="widget widget-7 card">
                   <div class="widget-header px-4 row no-gutters align-items-center justify-content-between">
                     <div class="col">
@@ -353,7 +373,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- / WIDGET 7 -->
             </div>
             <!-- / WIDGET GROUP -->
@@ -460,29 +480,310 @@
 
 <script>
 import moment from 'moment'
+import Chart from 'chart.js'
+import LoaderComponent from '@/components/Loader'
 
 export default {
   name: 'Dashboard',
+  components: {
+    LoaderComponent
+  },
   data () {
     return {
+      loading: false,
+      activeMonth: 'current',
       timerID: '',
       weektime: '',
       year: '',
       day: '',
-      month: ''
+      month: '',
+      charts: {
+        byType: '',
+        byCategory: ''
+      },
+      report: {},
+      money: {
+        decimal: '.',
+        thousands: ',',
+        prefix: '$ ',
+        suffix: '',
+        precision: 2,
+        masked: false,
+        format: (value) => {
+          return (this.money.prefix + ~~value + this.money.decimal + ((value % 1).toFixed(2).substring(2)))
+        }
+      }
+    }
+  },
+  computed: {
+    valueExpenses () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return '-'
+      }
+      return this.money.format(this.report[this.activeMonth].situation.price.settled + this.report[this.activeMonth].situation.price.pending)
+    },
+    valuePending () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return '-'
+      }
+      return this.money.format(this.report[this.activeMonth].situation.price.pending)
+    },
+    valueSettled () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return '-'
+      }
+      return this.money.format(this.report[this.activeMonth].situation.price.settled)
+    },
+    quantityExpenses () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return '-'
+      }
+      return (this.report[this.activeMonth].situation.quantity.settled + this.report[this.activeMonth].situation.quantity.pending)
+    },
+    quantityPending () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return '-'
+      }
+      return this.report[this.activeMonth].situation.quantity.pending
+    },
+    quantitySettled () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return '-'
+      }
+      return this.report[this.activeMonth].situation.quantity.settled
+    },
+    categoryMostExpensive () {
+      let category = {name: '-', price: '-', quantity: 0}
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return category
+      }
+
+      let arr = Object.values(this.report[this.activeMonth].category.price)
+      let max = arr.reduce((max, p) => p > max ? p : max, arr[0])
+      let name = Object.keys(this.report[this.activeMonth].category.price).reduce((data, key) => {
+        data[this.report[this.activeMonth].category.price[key]] = key
+        return data
+      }, {})[max]
+
+      category.name = name
+      category.price = this.money.format(this.report[this.activeMonth].category.price[name])
+      category.quantity = this.report[this.activeMonth].category.quantity[name]
+      return category
+    },
+    dataChartExpenseByType () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return {}
+      }
+      return {
+        datasets: [{
+          data: [
+            this.report[this.activeMonth].type.price.fixed.toFixed(2),
+            this.report[this.activeMonth].type.price.casual.toFixed(2),
+            this.report[this.activeMonth].type.price.superfluous.toFixed(2)
+          ],
+          backgroundColor: [
+            '#2196F3',
+            '#FFEB3B',
+            '#F44336'
+          ]
+        }],
+        labels: [
+          'Fixed',
+          'Casual',
+          'Superfluous'
+        ]
+      }
+    },
+    dataChartExpenseByCategory () {
+      if (this.loading || !Object.keys(this.report).length || !this.report[this.activeMonth] || !Object.keys(this.report[this.activeMonth]).length) {
+        return {}
+      }
+      return {
+        datasets: [{
+          data: Object.values(this.report[this.activeMonth].category.price).map(elem => elem.toFixed(3)),
+          backgroundColor: Object.values(this.report[this.activeMonth].category.price).map(() => '#' + Math.floor(Math.random() * 16777215).toString(16))
+        }],
+        labels: Object.keys(this.report[this.activeMonth].category.quantity)
+      }
+    },
+    dateReport () {
+      if (this.loading || !(Object.keys(this.report).length)) {
+        return 'Never generated'
+      }
+      return moment(String(this.report.date)).format('YYYY-MM-DD HH:mm')
     }
   },
   methods: {
+    mountCharts () {
+      if (typeof this.charts.byType === 'string') {
+        this.charts.byType = new Chart(this.$refs.expenseByType.getContext('2d'), {
+          type: 'pie',
+          data: this.dataChartExpenseByType,
+          options: {
+            legend: {
+              position: 'left'
+            }
+          }
+        })
+        this.charts.byCategory = new Chart(this.$refs.expenseByCategory.getContext('2d'), {
+          type: 'pie',
+          data: this.dataChartExpenseByCategory,
+          options: {
+            legend: {
+              display: false
+            }
+          }
+        })
+        return true
+      }
+      this.charts.byType.data = this.dataChartExpenseByType
+      this.charts.byType.update()
+      this.charts.byCategory.data = this.dataChartExpenseByCategory
+      this.charts.byCategory.update()
+      return false
+    },
     updateWeekTime () {
       let date = moment()
       this.weektime = date.format('dddd') + ', ' + date.format('HH') + ':' + date.format('mm') + ':' + date.format('ss')
       this.year = date.format('YYYY')
       this.day = date.format('DD')
       this.month = date.format('MMM')
+    },
+    toProcessDataExpense (expenses, node) {
+      let report = {}
+      report.situation = {}
+      report.situation.price = {}
+      report.situation.quantity = {}
+      report.type = {}
+      report.type.price = {}
+      report.type.quantity = {}
+      report.category = {}
+      report.category.price = {}
+      report.category.quantity = {}
+      report.situation.price.settled = expenses.reduce((sum, element) => sum + (element.situation === 'Settled' ? element.price : 0), 0)
+      report.situation.price.pending = expenses.reduce((sum, element) => sum + (element.situation === 'Pending' ? element.price : 0), 0)
+      report.situation.quantity.settled = expenses.filter(element => element.situation === 'Settled').length
+      report.situation.quantity.pending = expenses.filter(element => element.situation === 'Pending').length
+      report.type.price.fixed = expenses.reduce((sum, element) => sum + (element.type === 'Fixed' ? element.price : 0), 0)
+      report.type.price.casual = expenses.reduce((sum, element) => sum + (element.type === 'Casual' ? element.price : 0), 0)
+      report.type.price.superfluous = expenses.reduce((sum, element) => sum + (element.type === 'Superfluous' ? element.price : 0), 0)
+      report.type.quantity.fixed = expenses.filter(element => element.type === 'Fixed').length
+      report.type.quantity.casual = expenses.filter(element => element.type === 'Casual').length
+      report.type.quantity.superfluous = expenses.filter(element => element.type === 'Superfluous').length
+      for (let idx in this.$store.state.categories) {
+        report.category.price[this.$store.state.categories[idx]] = expenses.reduce((sum, element) => sum + (element.category === this.$store.state.categories[idx] ? element.price : 0), 0)
+        report.category.quantity[this.$store.state.categories[idx]] = expenses.filter(element => element.category === this.$store.state.categories[idx]).length
+      }
+      this.report[node] = report
+      return report
+    },
+    getCurrentMonth () {
+      return this.$store.dispatch('getExpense', {
+        month: moment().format('MM'),
+        year: moment().format('YYYY')
+      })
+        .then(data => this.toProcessDataExpense(data, 'current'))
+        .catch(/* istanbul ignore next */() => this.toProcessDataExpense([], 'current'))
+    },
+    getNextMonth () {
+      let date = moment().add(1, 'months')
+      return this.$store.dispatch('getExpense', {
+        month: date.format('MM'),
+        year: date.format('YYYY')
+      })
+        .then(data => this.toProcessDataExpense(data, 'next'))
+        .catch(/* istanbul ignore next */() => this.toProcessDataExpense([], 'next'))
+    },
+    getPreviousMonth () {
+      let date = moment().subtract(1, 'months')
+      return this.$store.dispatch('getExpense', {
+        month: date.format('MM'),
+        year: date.format('YYYY')
+      })
+        .then(data => this.toProcessDataExpense(data, 'previous'))
+        .catch(/* istanbul ignore next */() => this.toProcessDataExpense([], 'previous'))
+    },
+    createReport () {
+      this.loading = true
+      this.report = {}
+      let reports = []
+      reports.push(this.getCurrentMonth())
+      reports.push(this.getNextMonth())
+      reports.push(this.getPreviousMonth())
+      Promise.all(reports)
+        .then(() => {
+          this.saveReport()
+        })
+        .catch(/* istanbul ignore next */error => console.log(error.message))
+    },
+    saveReport () {
+      this.report.date = moment()
+      this.$store.dispatch('updateReport', {id: 'dashboard', report: this.report})
+        .then(/* istanbul ignore next */() => {
+          setTimeout(() => {
+            this.mountCharts()
+          }, 1000)
+        })
+        .catch(/* istanbul ignore next */() => { this.loading = false })
+        .finally(/* istanbul ignore next */() => { this.loading = false })
     }
   },
   mounted () {
     this.timerID = setInterval(this.updateWeekTime, 1000)
+    this.loading = true
+    this.$store.dispatch('getReportById', 'dashboard')
+      .then(/* istanbul ignore next */report => {
+        if (!report) {
+          throw Error('Not found')
+        }
+        this.report = report
+        setTimeout(() => {
+          this.mountCharts()
+        }, 1000)
+      })
+      .catch(/* istanbul ignore next */() => this.createReport())
+      .finally(/* istanbul ignore next */() => { this.loading = false })
   }
 }
 </script>
+
+<style scoped>
+#loading { width: 100%; margin-top: 30%; text-align: center; }
+.widget1 .title,
+.widget2 .title,
+.widget3 .title,
+.widget4 .title { font-size: 4rem !important; }
+.page-header select { background: transparent; color: #fff; }
+.page-header select option { color: #495057; }
+.page-header button.btn { color: #fff; }
+@media screen and (max-width: 1500px) {
+  .widget1 .title,
+  .widget2 .title,
+  .widget3 .title,
+  .widget4 .title { font-size: 3.5rem !important; }
+}
+@media screen and (max-width: 1350px) {
+  .widget1 .title,
+  .widget2 .title,
+  .widget3 .title,
+  .widget4 .title { font-size: 3rem !important; }
+}
+@media screen and (max-width: 1200px) {
+  .widget1 .title,
+  .widget2 .title,
+  .widget3 .title,
+  .widget4 .title { font-size: 6rem !important; }
+}
+@media screen and (max-width: 800px) {
+  .widget1 .title,
+  .widget2 .title,
+  .widget3 .title,
+  .widget4 .title { font-size: 5.5rem !important; }
+}
+@media screen and (max-width: 700px) {
+  .widget1 .title,
+  .widget2 .title,
+  .widget3 .title,
+  .widget4 .title { font-size: 4.7rem !important; }
+}
+</style>

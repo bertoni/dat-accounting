@@ -23,6 +23,10 @@ const infra = {
       // index: ['id', 'date', 'category', 'price', 'type', 'situation'],
       filePattern: '/expense/*.json'
     })
+    webdb.current.webdb.define('report', {
+      // index: ['id', 'date', 'category', 'price', 'type', 'situation'],
+      filePattern: '/report/*.json'
+    })
     return webdb.current.webdb.open()
   },
   checkDB: function (repository) {
@@ -39,7 +43,8 @@ const infra = {
     webdb.current = JSON.parse(JSON.stringify(data))
     webdb.current.webdb = new WebDB('webdb-dat-accounting-' + data.key)
     this.defineTables()
-    return webdb.current.webdb.indexArchive(data.url)
+    return this.checkDB(data.url)
+      .then(() => webdb.current.webdb.indexArchive(data.url))
   },
   removeWebDB: function (data) {
     if (webdb.current.key === data.key) {
@@ -65,9 +70,24 @@ const infra = {
     })
   },
   makeStructure: function (archive) {
-    return archive.readdir('expense')
+    return new Promise((resolve, reject) => {
+      this.createExpenseDir(archive)
+        .then(() => this.createReportDir(archive))
+        .then(() => resolve(true))
+        .catch(/* istanbul ignore next */error => reject(error))
+    })
+  },
+  createExpenseDir: function (archive) {
+    const folder = 'expense'
+    return archive.readdir(folder)
       .then(() => true)
-      .catch(/* istanbul ignore next */() => archive.mkdir('expense'))
+      .catch(/* istanbul ignore next */() => archive.mkdir(folder))
+  },
+  createReportDir: function (archive) {
+    const folder = 'report'
+    return archive.readdir(folder)
+      .then(() => true)
+      .catch(/* istanbul ignore next */() => archive.mkdir(folder))
   }
 }
 
@@ -126,4 +146,13 @@ const expense = {
   }
 }
 
-export default {webdb: webdb, infra: infra, categories: categories, expense: expense}
+const report = {
+  get: function (id) {
+    return webdb.current.webdb.report.get(webdb.current.url + '/report/' + id + '.json')
+  },
+  update: function (id, report) {
+    return webdb.current.webdb.report.upsert(webdb.current.url + '/report/' + id + '.json', report)
+  }
+}
+
+export default {webdb: webdb, infra: infra, categories: categories, expense: expense, report: report}

@@ -47,6 +47,20 @@ jest.mock('./../../../../src/vuex/api/index.js', () => ({
       }
       return Promise.resolve(true)
     })
+  },
+  report: {
+    get: jest.fn(id => {
+      if (id === 0) {
+        return Promise.reject(Error('error'))
+      }
+      return Promise.resolve({id: id})
+    }),
+    update: jest.fn(id => {
+      if (id === 0) {
+        return Promise.reject(Error('error'))
+      }
+      return Promise.resolve(true)
+    })
   }
 }))
 
@@ -319,5 +333,33 @@ describe('vuex/actions.js', () => {
     expect(store.state.repository).toMatchObject({})
     expect(store.state.repositories).toMatchObject([])
     expect(store.state.categories).toMatchObject(['Food', 'Tax', 'Transport'])
+  })
+
+  it('should return error in getReportById method', () => {
+    actions.getReportById(store, 0)
+      .catch(error => {
+        expect(error.message).toBe('error')
+      })
+  })
+
+  it('should return expense in getReportById method', () => {
+    actions.getReportById(store, 1)
+      .then(expense => {
+        expect(expense).toMatchObject({id: 1})
+      })
+  })
+
+  it('should return error in updateReport method', () => {
+    actions.updateReport(store, {id: 0, report: {}})
+      .catch(error => {
+        expect(error.message).toBe('error')
+      })
+  })
+
+  it('should return ok in updateReport method', () => {
+    actions.updateReport(store, {id: 1, report: {}})
+      .then(ret => {
+        expect(ret).toBeTruthy()
+      })
   })
 })
