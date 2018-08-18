@@ -5,6 +5,7 @@ import Dashboard from '@/components/pages/Dashboard'
 import moment from 'moment'
 
 console.warn = jest.genMockFunction()
+console.error = jest.genMockFunction()
 
 Vue.config.silent = true
 let wrapper
