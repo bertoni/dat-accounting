@@ -268,5 +268,5 @@ export default {
 .input-autocomplete::placeholder { color: #ffffff90; opacity: 1; }
 .v-autocomplete-list { width: 100%; max-height: 200px; overflow-y: auto; background-color: #ffffff; text-align: left; }
 .v-autocomplete input { width: 100%; height: 30px; padding: 0 5px; color: #585858; }
-img.loader { position: absolute; width: 26px; height: 26px; top: 23px; right: 17px; -webkit-filter: brightness(30%); filter: brightness(30%); }
+img.loader { position: absolute; width: 26px; height: 26px; top: 75px; right: 22px; -webkit-filter: brightness(30%); filter: brightness(30%); }
 </style>
