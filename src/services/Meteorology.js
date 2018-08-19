@@ -9,11 +9,7 @@ export const listLocations = (name) => {
   if (name) {
     params.q = 'select * from geo.places where text="' + name + '"'
   }
-  return axios({
-    method: 'get',
-    url: '/yql',
-    params: params
-  })
+  return axios.get('/yql', { params: params })
 }
 
 export const currentWeather = (cityID) => {
@@ -22,9 +18,5 @@ export const currentWeather = (cityID) => {
     u: 'c',
     q: 'select * from weather.forecast where woeid=' + cityID + ' and u="c"'
   }
-  return axios({
-    method: 'get',
-    url: '/yql',
-    params: params
-  })
+  return axios.get('/yql', { params: params })
 }

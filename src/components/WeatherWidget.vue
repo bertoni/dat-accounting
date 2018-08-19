@@ -194,14 +194,15 @@ export default {
     }
   },
   methods: {
+    setCurrentWeather (data) {
+      this.$store.dispatch('setCurrentWeather', data)
+    },
     clearLocation () {
       this.$store.dispatch('removeLocation')
     },
     updateCurrentWeather () {
       currentWeather(this.location.id)
-        .then(currentWeather => {
-          this.$store.dispatch('setCurrentWeather', currentWeather.data.query.results.channel)
-        })
+        .then(currentWeather => this.setCurrentWeather(currentWeather.data.query.results.channel))
     },
     change (value) {
       this.search.searching = true
@@ -214,13 +215,8 @@ export default {
       this.updateCurrentWeather()
     },
     itemSelected (item) {
-      if (typeof item === 'object') {
-        setTimeout(() => {
-          this.search.itemname = item.name
-          this.search.itemSelected = item
-          this.$store.dispatch('setLocation', this.search.itemSelected)
-          this.updateCurrentWeather()
-        }, 50)
+      if (item instanceof Object) {
+        this.itemClicked(item)
       }
     },
     updateItems (text) {
@@ -243,7 +239,9 @@ export default {
     }
   },
   mounted () {
+    /* istanbul ignore if */
     if (!Object.keys(this.currentWeather).length && this.hasLocation) {
+      /* istanbul ignore next */
       this.updateCurrentWeather()
     }
   }

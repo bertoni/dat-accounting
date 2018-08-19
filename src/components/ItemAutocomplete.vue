@@ -4,6 +4,7 @@
 
 <script>
 export default {
+  name: 'ItemAutocomplete',
   props: {
     item: { required: true }
   },
