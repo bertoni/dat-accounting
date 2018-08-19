@@ -4,6 +4,10 @@ import { __createMocks as createStoreMocks } from '../__mocks__/vuex'
 
 let store = createStoreMocks({
   state: {
+    location: {
+      currentLocation: {},
+      currentWeather: {}
+    },
     modalSimple: {
       title: '',
       content: '',
@@ -127,5 +131,20 @@ describe('vuex/mutations.js', () => {
   it('should empty categories in SET_CATEGORIES method', () => {
     store.store.commit(mutationTypes.SET_CATEGORIES)
     expect(store.state.categories).toMatchObject(['Food', 'Tax', 'Transport'])
+  })
+
+  it('should fill location in SET_LOCATION method', () => {
+    store.store.commit(mutationTypes.SET_LOCATION, {id: 123})
+    expect(store.state.location.currentLocation).toMatchObject({id: 123})
+  })
+
+  it('should empty location in REMOVE_LOCATION method', () => {
+    store.store.commit(mutationTypes.REMOVE_LOCATION)
+    expect(store.state.location.currentLocation).toMatchObject({})
+  })
+
+  it('should fill current weather in SET_CURRENT_WEATHER method', () => {
+    store.store.commit(mutationTypes.SET_CURRENT_WEATHER, {temperature: 20})
+    expect(store.state.location.currentWeather).toMatchObject({temperature: 20})
   })
 })

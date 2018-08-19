@@ -87,6 +87,10 @@ Object.defineProperty(window, 'localStorage', {
 })
 
 let state = {
+  location: {
+    currentLocation: {},
+    currentWeather: {}
+  },
   modalSimple: {
     title: '',
     content: '',
@@ -361,5 +365,20 @@ describe('vuex/actions.js', () => {
       .then(ret => {
         expect(ret).toBeTruthy()
       })
+  })
+
+  it('should set location in setLocation method', () => {
+    actions.setLocation(store, {id: 123})
+    expect(store.state.location.currentLocation).toMatchObject({id: 123})
+  })
+
+  it('should remove location in removeLocation method', () => {
+    actions.removeLocation(store)
+    expect(store.state.location.currentLocation).toMatchObject({})
+  })
+
+  it('should set current weather in setCurrentWeather method', () => {
+    actions.setCurrentWeather(store, {temperature: 13})
+    expect(store.state.location.currentWeather).toMatchObject({temperature: 13})
   })
 })

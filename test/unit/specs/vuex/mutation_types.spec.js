@@ -16,5 +16,8 @@ describe('vuex/mutation_types.js', () => {
     expect(mutationTypes).toHaveProperty('SET_REPOSITORY')
     expect(mutationTypes).toHaveProperty('SET_REPOSITORIES')
     expect(mutationTypes).toHaveProperty('SET_CATEGORIES')
+    expect(mutationTypes).toHaveProperty('SET_LOCATION')
+    expect(mutationTypes).toHaveProperty('REMOVE_LOCATION')
+    expect(mutationTypes).toHaveProperty('SET_CURRENT_WEATHER')
   })
 })

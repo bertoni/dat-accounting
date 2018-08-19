@@ -7,6 +7,10 @@ import mutations from './mutations.js'
 Vue.use(Vuex)
 
 const state = {
+  location: {
+    currentLocation: {},
+    currentWeather: {}
+  },
   modalSimple: {
     title: '',
     content: '',

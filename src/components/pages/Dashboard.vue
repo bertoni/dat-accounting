@@ -389,9 +389,9 @@
         <div class="widget widget-now">
           <div class="widget-header row no-gutters align-items-center justify-content-between pl-4 py-4">
             <div class="h6">{{weektime}}</div>
-            <button type="button" class="btn btn-icon fuse-ripple-ready" aria-label="Options">
+            <!-- <button type="button" class="btn btn-icon fuse-ripple-ready" aria-label="Options">
               <i class="icon icon-dots-vertical"></i>
-            </button>
+            </button> -->
           </div>
 
           <div class="widget-content d-flex flex-column align-items-center justify-content-center p-4 pb-6">
@@ -403,72 +403,7 @@
         <!-- / NOW WIDGET -->
         <div class="divider"></div>
         <!-- WEATHER WIDGET -->
-        <div class="widget widget-weather">
-          <div class="widget- header row no-gutters align-items-center justify-content-between pl-4 py-4">
-            <div class="row no-gutters align-items-center">
-              <i class="icon-map-marker mr-2"></i>
-              <span class="h6">New York</span>
-            </div>
-            <button type="button" class="btn btn-icon fuse-ripple-ready" aria-label="Options">
-              <i class="icon icon-dots-vertical"></i>
-            </button>
-          </div>
-
-          <div class="d-flex flex-column align-items-center justify-content-center p-4 pb-8">
-            <div class="today-weather row no-gutters align-items-center justify-content-center">
-              <i class="icon-weather-pouring s-10 mr-4"></i>
-              <span class="h1">22</span>
-              <span class="h1 text-muted">°</span>
-              <span class="h1 text-muted">C</span>
-            </div>
-          </div>
-
-          <div class="row no-gutters align-items-center justify-content-between p-4">
-            <div class="row no-gutters align-items-center">
-              <i class="icon-weather-windy icon mr-2 s-5"></i>
-              <span>12</span>
-              <span class="text-muted ml-1">KMH</span>
-            </div>
-            <div class="row align-items-center">
-              <i class="icon-compass-outline icon mr-2 s-5"></i>
-              <span>NW</span>
-            </div>
-            <div class="row no-gutters align-items-center">
-              <i class="icon-umbrella icon mr-2 s-5"></i>
-              <span>98%</span>
-            </div>
-          </div>
-
-          <div class="row no-gutters align-items-center justify-content-between p-4">
-            <span class="">Sunday</span>
-            <div class="row no-gutters align-items-center">
-              <i class="mr-4 icon-weather-pouring"></i>
-              <span class="h5">21</span>
-              <span class="h5 text-muted">°</span>
-              <span class="h5 text-muted">C</span>
-            </div>
-          </div>
-
-          <div class="row no-gutters align-items-center justify-content-between p-4">
-            <span class="">Sunday</span>
-            <div class="row no-gutters align-items-center">
-              <i class="mr-4 icon-weather-pouring"></i>
-              <span class="h5">19</span>
-              <span class="h5 text-muted">°</span>
-              <span class="h5 text-muted">C</span>
-            </div>
-          </div>
-
-          <div class="row no-gutters align-items-center justify-content-between p-4">
-            <span class="">Tuesday</span>
-            <div class="row no-gutters align-items-center">
-              <i class="mr-4 icon-weather-partlycloudy"></i>
-              <span class="h5">24</span>
-              <span class="h5 text-muted">°</span>
-              <span class="h5 text-muted">C</span>
-            </div>
-          </div>
-        </div>
+          <weather-widget />
         <!-- / WEATHER WIDGET -->
 
         <div class="divider"></div>
@@ -482,11 +417,13 @@
 import moment from 'moment'
 import Chart from 'chart.js'
 import LoaderComponent from '@/components/Loader'
+import WeatherWidget from '@/components/WeatherWidget'
 
 export default {
   name: 'Dashboard',
   components: {
-    LoaderComponent
+    LoaderComponent,
+    WeatherWidget
   },
   data () {
     return {
