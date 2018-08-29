@@ -98,6 +98,15 @@
 </template>
 
 <script>
+/* istanbul ignore if  */
+if (typeof String.prototype.padStart !== 'function') {
+  String.prototype.padStart = function (padlen, padchar) {
+    let pad_char = typeof padchar !== 'undefined' ? padchar : '0'
+    let pad = new Array(1 + padlen).join(pad_char)
+    return (pad + this).slice(-pad.length)
+  }
+}
+
 import Datepicker from 'vuejs-datepicker'
 import Moment from 'moment'
 import Chart from 'chart.js'
