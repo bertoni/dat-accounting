@@ -40,6 +40,18 @@
             </ul>
           </li>
 
+          <li class="nav-item" role="tab" id="heading-report">
+            <a class="nav-link ripple with-arrow collapsed" data-toggle="collapse" data-target="#collapse-report" href="#" aria-expanded="false" aria-controls="collapse-report" @click="updateScrollbar">
+              <i class="icon s-4 icon-chart-bar-stacked"></i>
+              <span>Report</span>
+            </a>
+            <ul id="collapse-report" class='collapse show' role="tabpanel" aria-labelledby="heading-report" data-children=".nav-item">
+              <li class="nav-item">
+                <router-link class="nav-link ripple" :to="{ name: 'report-by-year'}"><span>By Year</span></router-link>
+              </li>
+            </ul>
+          </li>
+
         </ul>
       </div>
     </div>

@@ -667,6 +667,11 @@ export default {
   },
   mounted () {
     this.timerID = setInterval(this.updateWeekTime, 1000)
+    const container = document.querySelector('#wrapper-global')
+    /* istanbul ignore next */
+    if (container && container.scrollTop) {
+      container.scrollTop = 0
+    }
     this.loading = true
     this.$store.dispatch('getReportById', 'dashboard')
       .then(/* istanbul ignore next */report => {

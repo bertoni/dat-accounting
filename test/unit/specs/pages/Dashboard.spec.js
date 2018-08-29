@@ -198,7 +198,6 @@ describe('Dashboard.vue', () => {
     wrapper.vm.report = {}
     wrapper.vm.report.date = moment()
     expect(wrapper.vm.dateReport.length).toBeGreaterThanOrEqual(1)
-    // expect(wrapper.vm.dateReport).toMatch(/^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}$/)
   })
 
   it('should update dates in updateWeekTime method', () => {

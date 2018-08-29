@@ -297,7 +297,7 @@ export default {
       this.importing = false
       if (!this.expenses.filter(elem => elem.saved).length) {
         this.$store.dispatch('notify', {text: 'No was possible save the expenses, please try again'})
-        setTimeout(/* istanbul ignore else */() => {
+        setTimeout(/* istanbul ignore next */() => {
           this.toScroll(document.querySelector('#wrapper-global table tfoot').offsetTop)
         }, 500)
         return false
@@ -308,7 +308,7 @@ export default {
         return true
       }
       this.$store.dispatch('notify', {type: 'success', text: 'Some Expenses was saved, but those on the list still need saved'})
-      setTimeout(/* istanbul ignore else */() => {
+      setTimeout(/* istanbul ignore next */() => {
         this.toScroll(document.querySelector('#wrapper-global table tfoot').offsetTop)
       }, 500)
       return false

@@ -6,6 +6,7 @@ import ExpenseList from '@/components/pages/ExpenseList'
 import ExpenseAdd from '@/components/pages/ExpenseAdd'
 import ExpenseEdit from '@/components/pages/ExpenseEdit'
 import MyAccounts from '@/components/pages/MyAccounts'
+import ReportByYear from '@/components/pages/ReportByYear'
 
 Vue.use(Router)
 
@@ -40,6 +41,11 @@ export default new Router({
       path: '/my-accounts',
       name: 'my-accounts',
       component: MyAccounts
+    },
+    {
+      path: '/report/by-year',
+      name: 'report-by-year',
+      component: ReportByYear
     }
   ]
 })
