@@ -2,6 +2,7 @@ import Vue from 'vue'
 import { shallowMount } from '@vue/test-utils'
 import { __createMocks as createStoreMocks } from './../__mocks__/vuex'
 import ReportByYear from '@/components/pages/ReportByYear'
+import {padStart} from '@/services/utilsOldES'
 import moment from 'moment'
 
 console.warn = jest.genMockFunction()
@@ -85,7 +86,7 @@ describe('ReportByYear.vue', () => {
     wrapper.vm.loading = false
     wrapper.vm.report = {}
     for (let i = 1; i <= 12; i++) {
-      wrapper.vm.report[i.toString().padStart(2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
+      wrapper.vm.report[padStart(i.toString(), 2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
     }
     expect(wrapper.vm.dataChartExpenseBySituationByMonth).toMatchObject({
       datasets: [
@@ -119,7 +120,7 @@ describe('ReportByYear.vue', () => {
     wrapper.vm.loading = false
     wrapper.vm.report = {}
     for (let i = 1; i <= 12; i++) {
-      wrapper.vm.report[i.toString().padStart(2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
+      wrapper.vm.report[padStart(i.toString(), 2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
     }
     expect(wrapper.vm.dataChartExpenseByTypeByMonth).toMatchObject({
       datasets: [
@@ -153,7 +154,7 @@ describe('ReportByYear.vue', () => {
     wrapper.vm.loading = false
     wrapper.vm.report = {}
     for (let i = 1; i <= 12; i++) {
-      wrapper.vm.report[i.toString().padStart(2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
+      wrapper.vm.report[padStart(i.toString(), 2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
     }
     expect(wrapper.vm.dataChartExpenseByCategoryByYear.datasets[0].data).toMatchObject(
       [(40.000 * 12).toFixed(2).toString(),
@@ -222,7 +223,7 @@ describe('ReportByYear.vue', () => {
     jest.clearAllMocks()
     wrapper.vm.report = {}
     for (let i = 1; i <= 12; i++) {
-      wrapper.vm.report[i.toString().padStart(2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
+      wrapper.vm.report[padStart(i.toString(), 2, '0')] = JSON.parse('{"situation":{"price":{"settled":3266.28,"pending":996.69},"quantity":{"settled":21,"pending":8}},"type":{"price":{"fixed":3533.34,"casual":589.1800000000001,"superfluous":140.45},"quantity":{"fixed":16,"casual":8,"superfluous":5}},"category":{"price":{"Clothing":40,"Communication":161.4,"Education":50.3,"Entertainment":45,"Food":480.59999999999997,"Health":135,"House Maintenance":383.26000000000005,"House Usage":408.53,"Hygiene and Beauty":80,"Investment":2000,"Personal":55,"Pets":0,"Security":0,"Tax":0,"Transport":423.88},"quantity":{"Clothing":1,"Communication":4,"Education":1,"Entertainment":2,"Food":6,"Health":2,"House Maintenance":3,"House Usage":2,"Hygiene and Beauty":2,"Investment":1,"Personal":1,"Pets":0,"Security":0,"Tax":0,"Transport":4}}}')
     }
     wrapper.vm.charts.bySituationMonth = ''
     wrapper.vm.charts.byTypeMonth = ''
