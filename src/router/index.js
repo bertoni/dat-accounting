@@ -1,12 +1,13 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Dashboard from '@/components/pages/Dashboard'
-import Categories from '@/components/pages/Categories'
-import ExpenseList from '@/components/pages/ExpenseList'
-import ExpenseAdd from '@/components/pages/ExpenseAdd'
-import ExpenseEdit from '@/components/pages/ExpenseEdit'
-import MyAccounts from '@/components/pages/MyAccounts'
-import ReportByYear from '@/components/pages/ReportByYear'
+
+const Dashboard = () => import(/* webpackChunkName: "group-common" */ '@/components/pages/Dashboard')
+const ExpenseList = () => import(/* webpackChunkName: "group-common" */ '@/components/pages/ExpenseList')
+const ExpenseAdd = () => import(/* webpackChunkName: "group-common" */ '@/components/pages/ExpenseAdd')
+const ExpenseEdit = () => import(/* webpackChunkName: "group-common" */ '@/components/pages/ExpenseEdit')
+const Categories = () => import(/* webpackChunkName: "group-manage" */ '@/components/pages/Categories')
+const MyAccounts = () => import(/* webpackChunkName: "group-manage" */ '@/components/pages/MyAccounts')
+const ReportByYear = () => import(/* webpackChunkName: "group-report" */ '@/components/pages/ReportByYear')
 
 Vue.use(Router)
 

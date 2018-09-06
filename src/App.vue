@@ -2,7 +2,7 @@
   <div id="wrapper">
     <aside-component />
     <div class="content-wrapper" :style="styleContentWrapper">
-      <nav-toolbar-component></nav-toolbar-component>
+      <nav-toolbar-component />
       <div class="content custom-scrollbar" id="wrapper-global">
         <router-view
           v-if="!splashScreen && isLogged" />
@@ -34,23 +34,19 @@
 import AsideComponent from '@/components/Aside'
 import NavToolbarComponent from '@/components/NavToolbar'
 import QuickPanelComponent from '@/components/QuickPanel'
-import ModalSimpleComponent from '@/components/ModalSimple'
-import ModalConfirmComponent from '@/components/ModalConfirm'
-import SideModalComponent from '@/components/SideModal'
-import LoginComponent from '@/components/Login'
 import SplashScreenComponent from '@/components/SplashScreen'
 
 export default {
   name: 'App',
   components: {
+    SplashScreenComponent,
     AsideComponent,
     NavToolbarComponent,
     QuickPanelComponent,
-    ModalSimpleComponent,
-    ModalConfirmComponent,
-    SideModalComponent,
-    LoginComponent,
-    SplashScreenComponent
+    'ModalSimpleComponent': /* istanbul ignore next */() => import('@/components/ModalSimple'),
+    'ModalConfirmComponent': /* istanbul ignore next */() => import('@/components/ModalConfirm'),
+    'SideModalComponent': /* istanbul ignore next */() => import('@/components/SideModal'),
+    'LoginComponent': /* istanbul ignore next */() => import('@/components/Login')
   },
   data () {
     return {
@@ -98,14 +94,16 @@ export default {
   },
   mounted () {
     this.$store.dispatch('init')
+      .then(/* istanbul ignore next */() => {
+        setTimeout(() => {
+          this.splashScreen = false
+        }, 500)
+      })
       .catch(/* istanbul ignore next */error => console.warn(error.message))
     setTimeout(/* istanbul ignore next */() => { this.$store.dispatch('updateScrollbar') }, 1000)
     window.addEventListener('resize', /* istanbul ignore next */() => {
       this.clientHeight = document.documentElement.clientHeight
     })
-    setTimeout(/* istanbul ignore next */() => {
-      this.splashScreen = false
-    }, 500)
   }
 }
 </script>
