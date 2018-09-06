@@ -16,7 +16,8 @@
     "coverage": "npm run unitCover",
     "testOld": "npm run unit && npm run e2e",
     "lint": "eslint --ext .js,.vue src test/unit test/e2e/specs",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "build:analyzer": "node build/build.js --report"
   },
   "dependencies": {
     "@beaker/webdb": "^4.1.3",

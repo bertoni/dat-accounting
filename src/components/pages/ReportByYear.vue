@@ -98,19 +98,11 @@
 </template>
 
 <script>
-/* istanbul ignore if  */
-if (typeof String.prototype.padStart !== 'function') {
-  String.prototype.padStart = function (padlen, padchar) {
-    let pad_char = typeof padchar !== 'undefined' ? padchar : '0'
-    let pad = new Array(1 + padlen).join(pad_char)
-    return (pad + this).slice(-pad.length)
-  }
-}
-
 import Datepicker from 'vuejs-datepicker'
 import Moment from 'moment'
 import Chart from 'chart.js'
 import LoaderComponent from '@/components/Loader'
+import {padStart} from '@/services/utilsOldES'
 
 export default {
   name: 'ReportByYear',
@@ -153,9 +145,9 @@ export default {
       let settled = []
       let total = []
       for (let i = 1; i <= 12; i++) {
-        pending.push(this.report[i.toString().padStart(2, '0')].situation.price.pending.toFixed(2))
-        settled.push(this.report[i.toString().padStart(2, '0')].situation.price.settled.toFixed(2))
-        total.push((parseFloat(this.report[i.toString().padStart(2, '0')].situation.price.pending) + parseFloat(this.report[i.toString().padStart(2, '0')].situation.price.settled)).toFixed(2))
+        pending.push(this.report[padStart(i.toString(), 2, '0')].situation.price.pending.toFixed(2))
+        settled.push(this.report[padStart(i.toString(), 2, '0')].situation.price.settled.toFixed(2))
+        total.push((parseFloat(this.report[padStart(i.toString(), 2, '0')].situation.price.pending) + parseFloat(this.report[padStart(i.toString(), 2, '0')].situation.price.settled)).toFixed(2))
       }
       return {
         datasets: [
@@ -192,9 +184,9 @@ export default {
       let casual = []
       let superfluous = []
       for (let i = 1; i <= 12; i++) {
-        fixed.push(this.report[i.toString().padStart(2, '0')].type.price.fixed.toFixed(2))
-        casual.push(this.report[i.toString().padStart(2, '0')].type.price.casual.toFixed(2))
-        superfluous.push(this.report[i.toString().padStart(2, '0')].type.price.superfluous.toFixed(2))
+        fixed.push(this.report[padStart(i.toString(), 2, '0')].type.price.fixed.toFixed(2))
+        casual.push(this.report[padStart(i.toString(), 2, '0')].type.price.casual.toFixed(2))
+        superfluous.push(this.report[padStart(i.toString(), 2, '0')].type.price.superfluous.toFixed(2))
       }
       return {
         datasets: [
@@ -229,7 +221,7 @@ export default {
       }
       let labels = {}
       for (let i = 1; i <= 12; i++) {
-        let month = i.toString().padStart(2, '0')
+        let month = padStart(i.toString(), 2, '0')
         for (let idx in this.report[month].category.price) {
           if (!labels[idx]) {
             labels[idx] = {}
@@ -396,7 +388,7 @@ export default {
       this.report = {}
       let reports = []
       for (let i = 1; i <= 12; i++) {
-        reports.push(this.getReportMonth(i.toString().padStart(2, '0')))
+        reports.push(this.getReportMonth(padStart(i.toString(), 2, '0')))
       }
       Promise.all(reports)
         .then(() => {
