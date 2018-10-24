@@ -94,12 +94,12 @@ export default {
   },
   mounted () {
     this.$store.dispatch('init')
-      .then(/* istanbul ignore next */() => {
+      .catch(/* istanbul ignore next */error => console.warn(error.message))
+      .finally(/* istanbul ignore next */() => {
         setTimeout(() => {
           this.splashScreen = false
-        }, 500)
+        }, 800)
       })
-      .catch(/* istanbul ignore next */error => console.warn(error.message))
     setTimeout(/* istanbul ignore next */() => { this.$store.dispatch('updateScrollbar') }, 1000)
     window.addEventListener('resize', /* istanbul ignore next */() => {
       this.clientHeight = document.documentElement.clientHeight
